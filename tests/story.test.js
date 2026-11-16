@@ -7,8 +7,8 @@ function run(argv) {
   const html = s.js;
   const m = html.match(/<script id="story">([\s\S]*?)<\/script>/);
   if (!m) return 'FAIL: story script block missing';
-  const api = (new Function(m[1] + '\nreturn {STORY, pickFinale, applyEffects, resetState};'))();
-  const { STORY, pickFinale, applyEffects, resetState } = api;
+  const api = (new Function(m[1] + '\nreturn {STORY, pickFinale, applyEffects, resetState, SPRITES: (typeof SPRITES==="undefined"?null:SPRITES)};'))();
+  const { STORY, pickFinale, applyEffects, resetState, SPRITES } = api;
   const P = STORY.passages, ids = Object.keys(P), out = []; let fails = 0;
   function t(name, fn) { try { fn(); out.push('ok   ' + name); } catch (e) { fails++; out.push('FAIL ' + name + ': ' + e.message); } }
   function ok(c, msg) { if (!c) throw new Error(msg); }
@@ -26,6 +26,9 @@ function run(argv) {
   t('stats clamp at 0', () => ok(applyEffects({chaos:0,bananas:0},{bananas:-5}).bananas === 0, 'negative'));
   t('reset', () => { const r = resetState(); ok(r.chaos === 0 && r.bananas === 0 && Object.keys(r).length === 2, 'bad reset'); });
   t('pickFinale returns real ending', () => { for (const s of [[0,0],[99,99],[0,99],[99,0]]) { const id = pickFinale({chaos:s[0],bananas:s[1]}); ok(P[id] && P[id].ending, 'bad ' + id); } });
+  t('every passage has a picture cast', () => { ok(SPRITES, 'no SPRITES'); for (const id of ids) ok(Array.isArray(P[id].cast) && P[id].cast.length, id + ' no cast'); });
+  t('every cast sprite exists and draws svg', () => { for (const id of ids) for (const c of P[id].cast || []) { ok(SPRITES[c], id + ' unknown sprite ' + c); ok(/<svg/.test(SPRITES[c]()), c + ' not svg'); } });
+  t('every main character has a sprite', () => { for (const c of ['gru','lucy','margo','edith','agnes','kyle','minion','unicorn','snoozemonger','fartgun']) ok(SPRITES && SPRITES[c], 'missing sprite ' + c); });
   out.push(fails ? fails + ' FAILED' : 'ALL PASS (' + ids.length + ' passages)');
   return out.join('\n');
 }

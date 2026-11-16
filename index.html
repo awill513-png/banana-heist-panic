@@ -43,6 +43,20 @@
     font-family: "Courier New", ui-monospace, monospace; font-size: 13px;
     color: var(--denim); text-transform: uppercase; letter-spacing: 2px; margin: 0 0 4px;
   }
+  .scene {
+    position: relative; display: flex; justify-content: center; align-items: flex-end; flex-wrap: wrap; gap: 4px 6px;
+    padding: 18px 12px 10px; margin: 0 0 18px; border-radius: 10px; border: 2px solid var(--line);
+    background: radial-gradient(circle at 20% 20%, #2a3150 0, transparent 60%), linear-gradient(#1b2034, #23283d);
+    border-bottom: 6px solid var(--yellow); min-height: 120px; overflow: hidden;
+  }
+  .scene::before { content: "· ✦ ·   ·  ✦   ·    ✦ ·"; position: absolute; top: 6px; left: 0; right: 0; text-align: center;
+    color: #4b5277; letter-spacing: 6px; font-size: 12px; pointer-events: none; }
+  .sprite { flex: 0 1 76px; min-width: 46px; animation: bob 1.8s ease-in-out infinite; }
+  .sprite svg { display: block; width: 100%; height: auto; }
+  .sprite:nth-child(2n) { animation-delay: -.6s; }
+  .sprite:nth-child(3n) { animation-delay: -1.2s; }
+  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+  @media (prefers-reduced-motion: reduce) { .sprite { animation: none; } }
   h1 { font-size: 28px; line-height: 1.25; margin: 0 0 18px; color: var(--yellow); }
   .passage p { margin: 0 0 14px; }
   .say { font-weight: bold; }
@@ -94,6 +108,162 @@
 </div>
 
 <script id="story">
+// ── Original retro cartoon sprites (hand-drawn SVG, 64×80) ──
+function svg(b) { return '<svg viewBox="0 0 64 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' + b + '</svg>'; }
+var INK = 'stroke="#1a1a1a" stroke-width="1.5"';
+var SPRITES = {
+  gru: function () { return svg(`
+    <path d="M12 80 L17 47 Q32 39 47 47 L52 80Z" fill="#2b2b30" ${INK}/>
+    <rect x="19" y="41" width="26" height="8" rx="4" fill="#7a7f8a" ${INK}/>
+    <rect x="35" y="47" width="7" height="18" fill="#7a7f8a" ${INK}/>
+    <rect x="35" y="52" width="7" height="3" fill="#2b2b30"/><rect x="35" y="59" width="7" height="3" fill="#2b2b30"/>
+    <ellipse cx="32" cy="23" rx="15" ry="18" fill="#f2d2b0" ${INK}/>
+    <path d="M30 20 Q22 34 29 36 Q35 37 35 30 Z" fill="#e8bb92" ${INK}/>
+    <circle cx="25" cy="20" r="2.2" fill="#1a1a1a"/><circle cx="39" cy="20" r="2.2" fill="#1a1a1a"/>
+    <path d="M20 15 l8 3 M44 15 l-8 3" stroke="#1a1a1a" stroke-width="2"/>
+    <path d="M24 38 q8 -3 16 0" fill="none" ${INK}/>`); },
+  lucy: function () { return svg(`
+    <path d="M15 34 Q13 7 32 6 Q51 7 49 34 L49 44 L15 44Z" fill="#d94a2b" ${INK}/>
+    <path d="M17 80 L20 51 Q32 45 44 51 L47 80Z" fill="#2fb3a8" ${INK}/>
+    <rect x="28" y="38" width="8" height="12" fill="#fbe0c8" ${INK}/>
+    <path d="M27 48 L32 56 L37 48" fill="#fff" ${INK}/>
+    <ellipse cx="32" cy="28" rx="12" ry="14" fill="#fbe0c8" ${INK}/>
+    <path d="M19 24 Q23 10 34 12 Q45 13 45 25 Q38 17 30 19 Q24 20 19 24Z" fill="#d94a2b" ${INK}/>
+    <circle cx="27" cy="28" r="2" fill="#1a1a1a"/><circle cx="37" cy="28" r="2" fill="#1a1a1a"/>
+    <path d="M26 34 q6 6 12 0 Z" fill="#e0245e" ${INK}/>`); },
+  margo: function () { return svg(`
+    <path d="M18 44 Q16 18 32 17 Q48 18 46 44 L46 58 L18 58Z" fill="#4a2c1a" ${INK}/>
+    <path d="M19 80 L22 60 Q32 55 42 60 L45 80Z" fill="#4a7fd4" ${INK}/>
+    <rect x="29" y="49" width="6" height="11" fill="#f6dcc4" ${INK}/>
+    <ellipse cx="32" cy="40" rx="11" ry="12" fill="#f6dcc4" ${INK}/>
+    <path d="M21 36 Q24 24 34 26 Q42 27 43 36 Q36 30 28 32Z" fill="#4a2c1a"/>
+    <rect x="23" y="37" width="8" height="6" rx="2" fill="#fff" fill-opacity=".5" ${INK}/><rect x="33" y="37" width="8" height="6" rx="2" fill="#fff" fill-opacity=".5" ${INK}/>
+    <circle cx="27" cy="40" r="1.4" fill="#1a1a1a"/><circle cx="37" cy="40" r="1.4" fill="#1a1a1a"/>
+    <path d="M28 47 h8" ${INK}/>`); },
+  edith: function () { return svg(`
+    <path d="M20 80 L22 60 Q32 55 42 60 L44 80Z" fill="#ff7fb0" ${INK}/>
+    <rect x="22" y="66" width="20" height="3" fill="#2b2b30"/><rect x="21" y="72" width="22" height="3" fill="#2b2b30"/>
+    <rect x="29" y="52" width="6" height="8" fill="#f6dcc4" ${INK}/>
+    <ellipse cx="32" cy="44" rx="11" ry="11" fill="#f6dcc4" ${INK}/>
+    <path d="M20 42 Q32 34 44 42 L44 38 Q32 32 20 38Z" fill="#f5d36b"/>
+    <path d="M19 40 Q19 22 32 22 Q45 22 45 40 Z" fill="#ff5c9a" ${INK}/>
+    <path d="M21 36 h22 M21 32 h22" stroke="#d23c78" stroke-width="2"/>
+    <circle cx="32" cy="20" r="3" fill="#ff5c9a" ${INK}/>
+    <circle cx="27" cy="45" r="1.8" fill="#1a1a1a"/><circle cx="37" cy="45" r="1.8" fill="#1a1a1a"/>
+    <path d="M27 50 q5 3 10 -1" fill="none" ${INK}/>`); },
+  agnes: function () { return svg(`
+    <path d="M21 80 L23 62 Q32 58 41 62 L43 80Z" fill="#ffe680" ${INK}/>
+    <path d="M22 80 V66 H42 V80Z" fill="#4a7fd4" ${INK}/>
+    <rect x="29" y="56" width="6" height="7" fill="#f6dcc4" ${INK}/>
+    <ellipse cx="32" cy="48" rx="11" ry="11" fill="#f6dcc4" ${INK}/>
+    <path d="M21 46 Q22 36 32 36 Q42 36 43 46 Q37 40 32 41 Q26 40 21 46Z" fill="#222" ${INK}/>
+    <ellipse cx="32" cy="32" rx="5" ry="6" fill="#222" ${INK}/>
+    <circle cx="32" cy="38" r="2" fill="#ff5c9a"/>
+    <circle cx="27" cy="49" r="2.4" fill="#1a1a1a"/><circle cx="37" cy="49" r="2.4" fill="#1a1a1a"/>
+    <circle cx="27.8" cy="48.2" r=".8" fill="#fff"/><circle cx="37.8" cy="48.2" r=".8" fill="#fff"/>
+    <ellipse cx="32" cy="55" rx="3" ry="2" fill="#a0303a"/>`); },
+  kyle: function () { return svg(`
+    <path d="M12 58 l3 -9 l3 6 l3 -10 l3 7 l3 -10 l3 8 l3 -9 l3 7 l3 -8 l3 6 l4 -4 V70 H12Z" fill="#3a3a42" ${INK}/>
+    <ellipse cx="30" cy="62" rx="18" ry="10" fill="#3a3a42" ${INK}/>
+    <rect x="16" y="68" width="5" height="10" fill="#3a3a42" ${INK}/><rect x="38" y="68" width="5" height="10" fill="#3a3a42" ${INK}/>
+    <circle cx="44" cy="52" r="11" fill="#3a3a42" ${INK}/>
+    <circle cx="46" cy="49" r="4.5" fill="#fff" ${INK}/><circle cx="47" cy="49" r="2" fill="#c23"/>
+    <path d="M36 58 h18 l-2 4 l-2 -3 l-2 4 l-2 -4 l-2 4 l-2 -4 l-2 4 l-2 -4z" fill="#fff" ${INK}/>`); },
+  minion: function () { return svg(`
+    <path d="M30 10 l-3 -7 M32 10 v-8 M34 10 l3 -7" stroke="#222" stroke-width="1.5"/>
+    <rect x="16" y="10" width="32" height="62" rx="16" fill="#ffd43b" ${INK}/>
+    <path d="M16 50 H48 V56 A16 16 0 0 1 16 56 Z" fill="#3b6fc4" ${INK}/>
+    <rect x="22" y="43" width="20" height="9" fill="#3b6fc4" ${INK}/>
+    <circle cx="32" cy="48" r="2" fill="#1a1a1a"/>
+    <path d="M16 42 L22 45 M48 42 L42 45" stroke="#1a1a1a" stroke-width="2"/>
+    <path d="M16 46 l-6 8 M48 46 l6 8" stroke="#ffd43b" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="10" cy="55" r="3" fill="#222"/><circle cx="54" cy="55" r="3" fill="#222"/>
+    <rect x="16" y="23" width="32" height="5" fill="#333"/>
+    <circle cx="32" cy="26" r="8.5" fill="#c7ccd6" stroke="#555" stroke-width="2"/>
+    <circle cx="32" cy="26" r="5.5" fill="#fff"/><circle cx="33" cy="26" r="2.5" fill="#6b4220"/><circle cx="33" cy="26" r="1.1" fill="#000"/>
+    <path d="M25 37 q7 7 14 0 Z" fill="#7a2b1a" ${INK}/>
+    <rect x="22" y="72" width="8" height="5" fill="#222"/><rect x="34" y="72" width="8" height="5" fill="#222"/>`); },
+  minion2: function () { return svg(`
+    <path d="M28 8 q2 -6 4 0 q2 -6 4 0" fill="none" stroke="#222" stroke-width="1.5"/>
+    <rect x="15" y="8" width="34" height="58" rx="17" fill="#ffd43b" ${INK}/>
+    <path d="M15 46 H49 V49 A17 17 0 0 1 15 49 Z" fill="#3b6fc4" ${INK}/>
+    <rect x="22" y="39" width="20" height="9" fill="#3b6fc4" ${INK}/>
+    <path d="M15 37 L22 41 M49 37 L42 41" stroke="#1a1a1a" stroke-width="2"/>
+    <path d="M15 42 l-5 -10 M49 42 l5 -10" stroke="#ffd43b" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="10" cy="31" r="3" fill="#222"/><circle cx="54" cy="31" r="3" fill="#222"/>
+    <rect x="15" y="20" width="34" height="5" fill="#333"/>
+    <circle cx="25" cy="23" r="6.5" fill="#c7ccd6" stroke="#555" stroke-width="2"/><circle cx="39" cy="23" r="6.5" fill="#c7ccd6" stroke="#555" stroke-width="2"/>
+    <circle cx="25" cy="23" r="4" fill="#fff"/><circle cx="39" cy="23" r="4" fill="#fff"/>
+    <circle cx="26" cy="24" r="1.8" fill="#3a6b2a"/><circle cx="38" cy="24" r="1.8" fill="#3a6b2a"/>
+    <path d="M26 32 q6 4 12 0" fill="none" ${INK}/>
+    <rect x="21" y="66" width="8" height="10" fill="#3b6fc4" ${INK}/><rect x="35" y="66" width="8" height="10" fill="#3b6fc4" ${INK}/>
+    <rect x="20" y="74" width="10" height="4" fill="#222"/><rect x="34" y="74" width="10" height="4" fill="#222"/>`); },
+  unicorn: function () { return svg(`
+    <g fill="#fff6fb" ${INK}>
+      <rect x="20" y="62" width="5" height="14"/><rect x="38" y="62" width="5" height="14"/>
+      <circle cx="22" cy="56" r="10"/><circle cx="33" cy="52" r="11"/><circle cx="42" cy="57" r="9"/><circle cx="31" cy="62" r="9"/>
+      <circle cx="47" cy="40" r="10"/>
+    </g>
+    <g fill="#fff6fb"><circle cx="31" cy="56" r="9"/><circle cx="24" cy="58" r="7"/><circle cx="39" cy="57" r="7"/></g>
+    <circle cx="12" cy="50" r="4" fill="#ff9fd1"/><circle cx="10" cy="56" r="4" fill="#b38bff"/><circle cx="12" cy="62" r="4" fill="#7fc8ff"/>
+    <path d="M47 31 L52 13 L55 32 Z" fill="#ffd43b" ${INK}/>
+    <circle cx="40" cy="32" r="4" fill="#ff9fd1"/><circle cx="37" cy="38" r="4" fill="#b38bff"/><circle cx="37" cy="45" r="4" fill="#7fc8ff"/>
+    <circle cx="50" cy="40" r="2" fill="#1a1a1a"/><circle cx="53" cy="45" r="2.5" fill="#ffb3cf"/>`); },
+  snoozemonger: function () { return svg(`
+    <path d="M14 80 L18 50 Q32 43 46 50 L50 80Z" fill="#6b4fc4" ${INK}/>
+    <path d="M23 50 V80 M32 47 V80 M41 50 V80" stroke="#a594f0" stroke-width="3"/>
+    <ellipse cx="32" cy="32" rx="13" ry="14" fill="#ecdccb" ${INK}/>
+    <path d="M18 27 Q30 2 46 24 Z" fill="#6b4fc4" ${INK}/>
+    <path d="M38 12 Q56 6 56 26" fill="none" stroke="#6b4fc4" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="56" cy="29" r="4.5" fill="#fff" ${INK}/>
+    <rect x="17" y="24" width="30" height="5" rx="2" fill="#fff" ${INK}/>
+    <path d="M23 33 q3 3 6 0 M35 33 q3 3 6 0" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+    <path d="M23 37 q3 2 6 0 M35 37 q3 2 6 0" fill="none" stroke="#b8a08a" stroke-width="1"/>
+    <path d="M32 40 q-5 -3 -10 0 q-3 2 -4 -2 M32 40 q5 -3 10 0 q3 2 4 -2" fill="none" stroke="#3a2a1a" stroke-width="2.5" stroke-linecap="round"/>
+    <text x="2" y="16" font-size="10" font-family="monospace" font-weight="bold" fill="#b4a6ff">z</text>
+    <text x="8" y="8" font-size="7" font-family="monospace" font-weight="bold" fill="#b4a6ff">z</text>`); },
+  fartgun: function () { return svg(`
+    <g fill="#a6e36b" fill-opacity=".85"><circle cx="9" cy="34" r="7"/><circle cx="14" cy="25" r="6"/><circle cx="6" cy="24" r="5"/><circle cx="12" cy="44" r="5"/></g>
+    <path d="M22 28 L13 22 L13 48 L22 42 Z" fill="#c7ccd6" ${INK}/>
+    <rect x="21" y="28" width="30" height="14" rx="3" fill="#8a8f99" ${INK}/>
+    <rect x="29" y="16" width="16" height="12" rx="5" fill="#ff6b3d" ${INK}/>
+    <circle cx="37" cy="22" r="2.5" fill="#ffd43b" ${INK}/>
+    <rect x="40" y="42" width="8" height="16" rx="2" fill="#4a4a52" ${INK}/>
+    <rect x="49" y="31" width="10" height="8" rx="2" fill="#4a4a52" ${INK}/>
+    <circle cx="27" cy="35" r="2" fill="#ffd43b"/>
+    <text x="20" y="72" font-size="9" font-family="monospace" font-weight="bold" fill="#a6e36b">PFFT</text>`); },
+  banana: function () { return svg(`
+    <path d="M10 56 Q30 78 54 46 Q52 42 48 46 Q30 68 14 52 Z" fill="#ffd43b" ${INK}/>
+    <path d="M12 46 Q30 66 52 36 Q50 32 46 36 Q30 58 15 42 Z" fill="#ffe066" ${INK}/>
+    <path d="M14 34 Q32 54 50 26 Q48 22 44 26 Q30 46 17 30 Z" fill="#ffd43b" ${INK}/>
+    <rect x="47" y="21" width="4" height="6" fill="#6b4a1a"/><rect x="51" y="32" width="4" height="6" fill="#6b4a1a"/><rect x="53" y="42" width="4" height="6" fill="#6b4a1a"/>`); },
+  snorebot: function () { return svg(`
+    <path d="M32 6 v8" stroke="#555" stroke-width="2"/><circle cx="32" cy="5" r="3" fill="#4a7fd4"/>
+    <rect x="16" y="14" width="32" height="24" rx="5" fill="#9aa0ad" ${INK}/>
+    <rect x="21" y="22" width="9" height="5" rx="2" fill="#7fc8ff"/><rect x="34" y="22" width="9" height="5" rx="2" fill="#7fc8ff"/>
+    <path d="M24 32 h16" stroke="#1a1a1a" stroke-width="2" stroke-dasharray="2 2"/>
+    <path d="M18 38 L46 38 L54 74 L10 74 Z" fill="#ffc6e0" ${INK}/>
+    <path d="M14 66 L50 66" stroke="#fff" stroke-width="3" stroke-dasharray="3 3"/>
+    <circle cx="22" cy="77" r="3" fill="#555"/><circle cx="42" cy="77" r="3" fill="#555"/>`); },
+  missile: function () { return svg(`
+    <path d="M32 4 Q44 18 42 50 H22 Q20 18 32 4Z" fill="#e63946" ${INK}/>
+    <circle cx="32" cy="26" r="5" fill="#7fc8ff" ${INK}/>
+    <path d="M22 40 L12 56 L22 52 Z M42 40 L52 56 L42 52 Z" fill="#b8202c" ${INK}/>
+    <rect x="23" y="34" width="18" height="6" fill="#fff"/>
+    <text x="24" y="39" font-size="4.5" font-family="monospace" fill="#1a1a1a">SAFE!</text>
+    <path d="M24 52 Q32 76 40 52 Z" fill="#ffd43b"/><path d="M28 52 Q32 66 36 52 Z" fill="#ff6b3d"/>`); },
+  boom: function () { return svg(`
+    <path d="M32 6 L38 24 L56 16 L46 32 L62 42 L44 46 L50 66 L34 54 L22 72 L22 52 L4 54 L16 40 L2 26 L20 26 L18 8 L28 22Z" fill="#ffb02e" ${INK}/>
+    <path d="M32 18 L36 30 L48 26 L41 36 L50 42 L38 44 L40 56 L32 48 L24 58 L25 46 L14 44 L22 36 L14 28 L26 30Z" fill="#ffe066"/>
+    <text x="17" y="43" font-size="10" font-family="monospace" font-weight="bold" fill="#c2261c">BOOM</text>`); },
+  ice: function () { return svg(`
+    <rect x="8" y="14" width="48" height="58" rx="6" fill="#bfe6ff" fill-opacity=".75" ${INK}/>
+    <ellipse cx="32" cy="38" rx="12" ry="14" fill="#f2d2b0" fill-opacity=".8"/>
+    <circle cx="27" cy="36" r="1.8" fill="#1a1a1a"/><circle cx="37" cy="36" r="1.8" fill="#1a1a1a"/>
+    <path d="M27 46 q5 -3 10 0" fill="none" ${INK}/>
+    <path d="M14 22 L22 18 M14 30 L18 26 M46 60 L52 54" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>`); }
+};
+
 // Speaker helpers keep the story text readable.
 function G(t) { return '<span class="say gru">GRU:</span> ' + t; }
 function L(t) { return '<span class="say lucy">LUCY:</span> ' + t; }
@@ -110,6 +280,7 @@ var STORY = {
   passages: {
     // ───────── CHAPTER 1: UH-OH ─────────
     start: {
+      cast: ['gru', 'minion', 'minion2', 'minion'],
       chapter: 'Chapter 1 · Uh-Oh', title: 'The Great Banana Alarm',
       text: [
         'It is a peaceful Tuesday morning in Gru\'s underground lab. Then every alarm in the building goes off at once.',
@@ -126,6 +297,7 @@ var STORY = {
       ]
     },
     news: {
+      cast: ['margo', 'edith', 'agnes', 'kyle', 'snoozemonger'],
       chapter: 'Chapter 1 · Uh-Oh', title: 'Breaking News',
       text: [
         'Margo, Edith, and Agnes are on the couch. Kyle the dog is chewing a remote control that is not his.',
@@ -142,6 +314,7 @@ var STORY = {
       ]
     },
     lucy_call: {
+      cast: ['lucy', 'gru', 'banana', 'minion'],
       chapter: 'Chapter 1 · Uh-Oh', title: 'Agent Wilde Reporting',
       text: [
         'Before Gru can finish dialing, Lucy crashes through the skylight on a rope, does three cartwheels, and lands in a perfect pose.',
@@ -157,6 +330,7 @@ var STORY = {
       ]
     },
     minion_investigate: {
+      cast: ['minion', 'minion2', 'minion', 'gru'],
       chapter: 'Chapter 1 · Uh-Oh', title: 'The Investigation',
       text: [
         'Gru sends three of his best Minions to investigate. Fourteen hours later (it has been nine minutes) they come back.',
@@ -173,6 +347,7 @@ var STORY = {
       ]
     },
     agnes_unicorn: {
+      cast: ['agnes', 'unicorn', 'gru', 'margo'],
       chapter: 'Chapter 1 · Uh-Oh', title: 'Emergency Supplies',
       text: [
         'Agnes is stuffing a tiny suitcase. Inside: a juice box, a flashlight, and the fluffy unicorn.',
@@ -191,6 +366,7 @@ var STORY = {
 
     // ───────── CHAPTER 2: GADGETS ─────────
     plan: {
+      cast: ['gru', 'edith', 'fartgun', 'minion'],
       chapter: 'Chapter 2 · Gadget Time', title: 'The War Room',
       text: [
         'Gru clicks to a slide titled <b>OPERATION: GET THE BANANAS BACK (AND ALSO SAVE THE WORLD)</b>. The next slide is a stick figure of Gru punching a pillow.',
@@ -208,6 +384,7 @@ var STORY = {
       ]
     },
     gadget_fart: {
+      cast: ['gru', 'fartgun', 'kyle', 'margo', 'edith'],
       chapter: 'Chapter 2 · Gadget Time', title: 'Test Fire',
       text: [
         'Gru hoists the fart gun onto his shoulder. A Minion hands him safety goggles, then puts on a gas mask and two more pairs of goggles.',
@@ -225,6 +402,7 @@ var STORY = {
       ]
     },
     gadget_freeze: {
+      cast: ['gru', 'ice', 'agnes', 'lucy'],
       chapter: 'Chapter 2 · Gadget Time', title: 'Chill Out',
       text: [
         'Gru picks up the freeze ray and gives a dramatic spin.',
@@ -241,6 +419,7 @@ var STORY = {
       ]
     },
     edith_choice: {
+      cast: ['edith', 'missile', 'gru'],
       chapter: 'Chapter 2 · Gadget Time', title: 'Edith\'s Pick',
       text: [
         'Edith walks straight past the gadget wall to a dusty crate labeled <b>DO NOT OPEN. SERIOUSLY. — GRU</b>.',
@@ -256,6 +435,7 @@ var STORY = {
       ]
     },
     fail_frozen: {
+      cast: ['ice', 'minion', 'minion2'],
       chapter: 'Oops', title: 'Gru-sicle',
       text: [
         'Gru wiggles. The ice spreads. Gru wiggles harder. Now he is frozen up to the neck.',
@@ -271,6 +451,7 @@ var STORY = {
       ]
     },
     fail_boom: {
+      cast: ['boom', 'edith', 'margo', 'kyle'],
       chapter: 'Oops', title: 'KA-BLAMMO',
       text: [
         FX('K A - B O O O O O M'),
@@ -288,6 +469,7 @@ var STORY = {
 
     // ───────── CHAPTER 3: GETTING THERE ─────────
     travel_jet: {
+      cast: ['minion', 'minion2', 'lucy', 'gru', 'kyle'],
       chapter: 'Chapter 3 · Getting There', title: 'Up, Up, and Uh-Oh',
       text: [
         'Everyone piles into Gru\'s jet. Kyle refuses to come out of the dryer, so Gru carries in the whole dryer.',
@@ -302,6 +484,7 @@ var STORY = {
       ]
     },
     travel_catapult: {
+      cast: ['gru', 'agnes', 'margo', 'banana'],
       chapter: 'Chapter 3 · Getting There', title: 'Minion-Powered Flight',
       text: [
         'Gru, the girls, Lucy, and Kyle are loaded into the giant Minion catapult. The Minions pull the lever together.',
@@ -318,6 +501,7 @@ var STORY = {
       ]
     },
     banana_truck: {
+      cast: ['banana', 'minion', 'minion2', 'gru'],
       chapter: 'Chapter 3 · Getting There', title: 'Bananas. So Many Bananas.',
       text: [
         'The truck rumbles toward the pillow fortress. It\'s dark and quiet and smells like a fruit salad.',
@@ -333,6 +517,7 @@ var STORY = {
       ]
     },
     fail_eaten: {
+      cast: ['minion', 'banana', 'snorebot', 'edith'],
       chapter: 'Oops', title: 'Banana Coma',
       text: [
         '"One banana each" turns into every banana in the truck in about four seconds.',
@@ -348,6 +533,7 @@ var STORY = {
       ]
     },
     minion_pilot: {
+      cast: ['minion', 'lucy', 'gru'],
       chapter: 'Chapter 3 · Getting There', title: 'Captain Minion',
       text: [
         'The Minion pilot cracks his knuckles, salutes, and immediately pushes every button.',
@@ -364,6 +550,7 @@ var STORY = {
       ]
     },
     lucy_pilot: {
+      cast: ['lucy', 'kyle', 'margo'],
       chapter: 'Chapter 3 · Getting There', title: 'Smooth Landing',
       text: [
         'Lucy takes the controls, cranks up a spy movie soundtrack, and pulls off a perfect stealth landing on the fortress roof.',
@@ -382,6 +569,7 @@ var STORY = {
 
     // ───────── CHAPTER 4: THE SHOWDOWN ─────────
     lair_entrance: {
+      cast: ['snorebot', 'snorebot', 'gru'],
       chapter: 'Chapter 4 · The Pillow Fortress', title: 'The Snorebots',
       text: [
         'The lair is soft, dim, and very quiet. Everything is made of pillows: the walls, the floor, even the light fixtures.',
@@ -397,6 +585,7 @@ var STORY = {
       ]
     },
     lair_fart: {
+      cast: ['fartgun', 'snorebot', 'edith', 'agnes', 'minion'],
       chapter: 'Chapter 4 · The Pillow Fortress', title: 'Toxic Lullaby',
       text: [
         FX('PFFFRRRRRAAAAAAAPPPPPPP!!!'),
@@ -412,6 +601,7 @@ var STORY = {
       ]
     },
     lair_lucy: {
+      cast: ['lucy', 'snorebot', 'gru', 'margo'],
       chapter: 'Chapter 4 · The Pillow Fortress', title: 'Agent Wilde Gets Busy',
       text: [
         'Lucy flips over the first Snorebot, zaps the second with her lipstick taser, and hog-ties the third with her own scarf.',
@@ -427,6 +617,7 @@ var STORY = {
       ]
     },
     lair_kyle: {
+      cast: ['kyle', 'gru', 'snorebot', 'agnes'],
       chapter: 'Chapter 4 · The Pillow Fortress', title: 'Release the Kyle',
       text: [
         'Gru opens the dryer door. Kyle shoots out like a furious, spiky meatball.',
@@ -443,6 +634,7 @@ var STORY = {
       ]
     },
     banana_vault: {
+      cast: ['banana', 'minion', 'minion2', 'gru', 'banana'],
       chapter: 'Chapter 4 · The Pillow Fortress', title: 'The Banana Vault',
       text: [
         'The vault door swings open, and golden light floods out. It\'s a mountain of bananas, all the bananas on Earth, piled to the ceiling.',
@@ -457,6 +649,7 @@ var STORY = {
       ]
     },
     snooze_room: {
+      cast: ['margo', 'edith', 'snoozemonger'],
       chapter: 'Chapter 4 · The Pillow Fortress', title: 'The Nap Ray Chamber',
       text: [
         'In the center of a huge room is the <b>Eternal Nap Ray</b>: a giant cannon covered in quilts and powered by a big, glowing banana battery.',
@@ -473,6 +666,7 @@ var STORY = {
       ]
     },
     showdown: {
+      cast: ['snoozemonger', 'gru', 'margo', 'agnes'],
       chapter: 'Chapter 4 · The Pillow Fortress', title: 'Pajama Party of Doom',
       text: [
         'Dr. Snoozemonger floats down on a hovering mattress, aiming the Nap Ray straight at Gru.',
@@ -489,6 +683,7 @@ var STORY = {
       ]
     },
     final_fart: {
+      cast: ['fartgun', 'kyle', 'snoozemonger'],
       chapter: 'Chapter 4 · The Pillow Fortress', title: 'The Final Toot',
       text: [
         'Gru raises the fart gun, aims, and pulls the trigger.',
@@ -505,6 +700,7 @@ var STORY = {
       ]
     },
     final_unicorn: {
+      cast: ['agnes', 'unicorn', 'snoozemonger', 'gru'],
       chapter: 'Chapter 4 · The Pillow Fortress', title: 'IT\'S SO FLUFFY',
       text: [
         'Agnes stands up, unzips her suitcase, and pulls out the fluffy unicorn. She holds it high above her head.',
@@ -521,6 +717,7 @@ var STORY = {
       ]
     },
     final_minions: {
+      cast: ['minion', 'minion2', 'minion', 'snoozemonger'],
       chapter: 'Chapter 4 · The Pillow Fortress', title: 'BANANA!',
       text: [
         'Gru takes a deep breath and yells the only word guaranteed to wake a Minion.',
@@ -538,6 +735,7 @@ var STORY = {
 
     // ───────── ENDINGS ─────────
     end_hero: {
+      cast: ['gru', 'lucy', 'margo', 'edith', 'agnes', 'kyle', 'minion', 'unicorn'],
       chapter: 'The End', title: 'The Greatest Banana Rescue in History',
       ending: true, finale: true,
       text: [
@@ -552,6 +750,7 @@ var STORY = {
       ]
     },
     end_chaos: {
+      cast: ['minion', 'minion2', 'snoozemonger', 'kyle', 'margo'],
       chapter: 'The End', title: 'The Banana Water Park',
       ending: true, finale: true,
       text: [
@@ -565,6 +764,7 @@ var STORY = {
       ]
     },
     end_nap: {
+      cast: ['gru', 'agnes', 'unicorn', 'snoozemonger'],
       chapter: 'The End', title: 'A Well-Deserved Nap',
       ending: true, finale: true,
       text: [
@@ -618,6 +818,7 @@ function pickFinale(state) {
   function show(id, effects) {
     var p = STORY.passages[id];
     var html = '';
+    if (p.cast) html += '<div class="scene">' + p.cast.map(function (c) { return '<span class="sprite">' + SPRITES[c]() + '</span>'; }).join('') + '</div>';
     if (p.chapter) html += '<p class="chapter">' + p.chapter + '</p>';
     html += '<h1>' + p.title + '</h1>';
     var d = deltaText(effects);
