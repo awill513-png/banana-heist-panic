@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Banana Heist Panic</title>
+<style>
+  :root {
+    --bg: #14161f;
+    --panel: #1d2030;
+    --ink: #ecebe4;
+    --muted: #9a9cb0;
+    --yellow: #ffd43b;
+    --denim: #4a7fd4;
+    --goggle: #c7ccd6;
+    --danger: #ff6b6b;
+    --line: #2d3146;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font: 18px/1.65 Georgia, "Iowan Old Style", serif;
+    min-height: 100vh;
+    padding: 24px 16px 64px;
+  }
+  .wrap { max-width: 680px; margin: 0 auto; }
+  header {
+    display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between;
+    border-bottom: 2px dashed var(--line); padding-bottom: 12px; margin-bottom: 24px;
+    font-family: "Courier New", ui-monospace, monospace; font-size: 14px;
+  }
+  .logo { color: var(--yellow); font-weight: bold; letter-spacing: 1px; text-transform: uppercase; }
+  .stats { display: flex; gap: 14px; color: var(--muted); }
+  .stats b { color: var(--ink); }
+  .stats .chaos b { color: var(--danger); }
+  .stats .nana b { color: var(--yellow); }
+  button.restart {
+    font: inherit; background: none; color: var(--muted); border: 1px solid var(--line);
+    padding: 4px 10px; border-radius: 4px; cursor: pointer;
+  }
+  button.restart:hover { color: var(--ink); border-color: var(--muted); }
+  .chapter {
+    font-family: "Courier New", ui-monospace, monospace; font-size: 13px;
+    color: var(--denim); text-transform: uppercase; letter-spacing: 2px; margin: 0 0 4px;
+  }
+  h1 { font-size: 28px; line-height: 1.25; margin: 0 0 18px; color: var(--yellow); }
+  .passage p { margin: 0 0 14px; }
+  .say { font-weight: bold; }
+  .gru { color: #9fc3ff; }
+  .lucy { color: #7fe0c4; }
+  .margo { color: #d5a6ff; }
+  .edith { color: #ffa36b; }
+  .agnes { color: #ff9fd1; }
+  .minion { color: var(--yellow); font-style: italic; }
+  .villain { color: #b4a6ff; }
+  .sfx {
+    display: inline-block; font-family: "Courier New", ui-monospace, monospace; font-weight: bold;
+    color: #a6e36b; letter-spacing: 2px;
+  }
+  .note { color: var(--muted); font-style: italic; }
+  .delta { font-family: "Courier New", ui-monospace, monospace; font-size: 14px; color: var(--muted); margin: -4px 0 16px; }
+  ol.choices { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 10px; }
+  ol.choices button {
+    width: 100%; text-align: left; font: inherit; color: var(--ink);
+    background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--yellow);
+    padding: 12px 16px; border-radius: 6px; cursor: pointer; transition: transform .08s, border-color .15s;
+  }
+  ol.choices button:hover, ol.choices button:focus-visible {
+    border-color: var(--denim); border-left-color: var(--yellow); transform: translateX(4px); outline: none;
+  }
+  ol.choices .key { font-family: "Courier New", ui-monospace, monospace; color: var(--yellow); margin-right: 8px; }
+  .theend {
+    margin-top: 28px; padding: 16px; border: 2px dashed var(--yellow); border-radius: 8px; text-align: center;
+    font-family: "Courier New", ui-monospace, monospace;
+  }
+  .theend strong { display: block; font-size: 22px; color: var(--yellow); letter-spacing: 4px; }
+  .fade { animation: fade .35s ease-out; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .fade { animation: none; } ol.choices button { transition: none; } }
+  @media (max-width: 480px) { body { font-size: 17px; } h1 { font-size: 24px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="logo">🍌 Banana Heist Panic</span>
+    <span class="stats">
+      <span class="nana">Bananas recovered: <b id="s-bananas">0</b></span>
+      <span class="chaos">Minion chaos: <b id="s-chaos">0</b></span>
+    </span>
+    <button class="restart" id="restart" type="button">↺ Restart</button>
+  </header>
+  <main id="passage" class="passage" aria-live="polite"></main>
+</div>
+
+<script id="story">
+// Speaker helpers keep the story text readable.
+function G(t) { return '<span class="say gru">GRU:</span> ' + t; }
+function L(t) { return '<span class="say lucy">LUCY:</span> ' + t; }
+function MA(t) { return '<span class="say margo">MARGO:</span> ' + t; }
+function E(t) { return '<span class="say edith">EDITH:</span> ' + t; }
+function A(t) { return '<span class="say agnes">AGNES:</span> ' + t; }
+function MI(t) { return '<span class="say minion">MINIONS:</span> <span class="minion">' + t + '</span>'; }
+function V(t) { return '<span class="say villain">DR. SNOOZEMONGER:</span> ' + t; }
+function FX(t) { return '<span class="sfx">' + t + '</span>'; }
+function N(t) { return '<span class="note">' + t + '</span>'; }
+
+var STORY = {
+  start: 'start',
+  passages: {
+    // ───────── CHAPTER 1: UH-OH ─────────
+    start: {
+      chapter: 'Chapter 1 · Uh-Oh', title: 'The Great Banana Alarm',
+      text: [
+        'It is a peaceful Tuesday morning in Gru\'s underground lab. Then every alarm in the building goes off at once.',
+        FX('WEE-OOO WEE-OOO WEE-OOO'),
+        'A Minion is riding the alarm light like a rodeo bull. Another one is crying into an empty fruit bowl. Forty more are running in circles, screaming.',
+        MI('BANANAAAA?! NO BANANA! NO BANANAAAA!'),
+        G('Calm down! CALM DOWN! What happened to the bananas?'),
+        'A Minion holds up a newspaper upside down. The headline reads: <b>EVERY BANANA ON EARTH MYSTERIOUSLY VANISHES.</b>'
+      ],
+      choices: [
+        { label: 'Run upstairs to watch the news with the girls', to: 'news' },
+        { label: 'Call Lucy at the Anti-Villain League', to: 'lucy_call' },
+        { label: 'Send the Minions to investigate (what could go wrong?)', to: 'minion_investigate', effects: { chaos: 2 } }
+      ]
+    },
+    news: {
+      chapter: 'Chapter 1 · Uh-Oh', title: 'Breaking News',
+      text: [
+        'Margo, Edith, and Agnes are on the couch. Kyle the dog is chewing a remote control that is not his.',
+        'On TV, a man in silk pajamas and a nightcap waves from a floating fortress shaped like a giant pillow.',
+        V('Greetings, world. I have taken ALL your bananas. They will power my <b>Eternal Nap Ray</b>, which will put the entire planet to sleep. Forever. Shhhhh.'),
+        MA('Great. Another villain with a theme.'),
+        E('Can we blow up his pillow? Please? I\'ll do my homework for a week.'),
+        A('He looks sleepy. Maybe he just needs a hug.'),
+        G('Nobody is hugging the villain.')
+      ],
+      choices: [
+        { label: 'Head to the war room to make a plan', to: 'plan' },
+        { label: 'Wait, why is Agnes packing a suitcase?', to: 'agnes_unicorn' }
+      ]
+    },
+    lucy_call: {
+      chapter: 'Chapter 1 · Uh-Oh', title: 'Agent Wilde Reporting',
+      text: [
+        'Before Gru can finish dialing, Lucy crashes through the skylight on a rope, does three cartwheels, and lands in a perfect pose.',
+        L('Gru, honey! The AVL has a lead! The banana thief is <b>Dr. Snoozemonger</b>, the world\'s sleepiest supervillain.'),
+        G('How did you get here so fast? I had not even pressed call yet.'),
+        L('I was already on the roof. I like to be early! Also I brought my lipstick taser, my grappling hook, and snacks.'),
+        N('The snacks are bananas. Forty Minion heads swivel toward Lucy at the exact same time.'),
+        L('...Okay, the snacks are gone now.')
+      ],
+      choices: [
+        { label: '"To the war room!"', to: 'plan', effects: { bananas: 1 } },
+        { label: 'Check on the girls first', to: 'news' }
+      ]
+    },
+    minion_investigate: {
+      chapter: 'Chapter 1 · Uh-Oh', title: 'The Investigation',
+      text: [
+        'Gru sends three of his best Minions to investigate. Fourteen hours later (it has been nine minutes) they come back.',
+        'One is wearing a detective hat. One has a magnifying glass, which is a donut. The third is asleep and snoring loudly.',
+        MI('Bello! We find... CLUE!'),
+        'They proudly present the clue: a single slipper, fuzzy and pink, monogrammed with "Dr. S."',
+        G('Hm. Slippers. Snoring. A banana thief who wants everyone asleep... Wait. Why is that one still sleeping?'),
+        FX('ZZZZZ... ba-na-naaa... zzz'),
+        N('Minion chaos is rising. One of them has now put the slipper on his head.')
+      ],
+      choices: [
+        { label: 'Turn on the news for answers', to: 'news' },
+        { label: 'Call Lucy, a real professional', to: 'lucy_call' }
+      ]
+    },
+    agnes_unicorn: {
+      chapter: 'Chapter 1 · Uh-Oh', title: 'Emergency Supplies',
+      text: [
+        'Agnes is stuffing a tiny suitcase. Inside: a juice box, a flashlight, and the fluffy unicorn.',
+        G('Agnes, sweetie, we are going to fight a supervillain. You do not need the unicorn.'),
+        A('Unicorn is for emergencies.'),
+        G('What kind of emergencies?'),
+        A('<b>Fluffy</b> emergencies.'),
+        'Gru opens his mouth, closes it, and decides not to argue with a seven-year-old with this level of confidence.',
+        MA('Just let her bring it. You know you\'re going to lose.')
+      ],
+      choices: [
+        { label: 'Fine. Unicorn comes. To the war room!', to: 'plan' },
+        { label: 'Watch the rest of the villain\'s broadcast', to: 'news' }
+      ]
+    },
+
+    // ───────── CHAPTER 2: GADGETS ─────────
+    plan: {
+      chapter: 'Chapter 2 · Gadget Time', title: 'The War Room',
+      text: [
+        'Gru clicks to a slide titled <b>OPERATION: GET THE BANANAS BACK (AND ALSO SAVE THE WORLD)</b>. The next slide is a stick figure of Gru punching a pillow.',
+        G('Step one: we pick our weapon. Step two: we fly to the pillow fortress. Step three: we win. Questions?'),
+        E('Is step three explosions?'),
+        G('Possibly.'),
+        E('Yesss.'),
+        'The gadget wall slides open. Front and center, gleaming, is the legendary <b>fart gun</b>.',
+        MI('Hehehe... PFFFT! Hehehehe!')
+      ],
+      choices: [
+        { label: 'Grab the fart gun (obviously)', to: 'gadget_fart', effects: { chaos: 1 } },
+        { label: 'Take the freeze ray, the "mature" choice', to: 'gadget_freeze' },
+        { label: 'Let Edith choose the weapon', to: 'edith_choice', effects: { chaos: 2 } }
+      ]
+    },
+    gadget_fart: {
+      chapter: 'Chapter 2 · Gadget Time', title: 'Test Fire',
+      text: [
+        'Gru hoists the fart gun onto his shoulder. A Minion hands him safety goggles, then puts on a gas mask and two more pairs of goggles.',
+        G('Let us test it. Stand back.'),
+        FX('PFFFFRRRRRAAAAPPP!!!'),
+        'A green cloud fills the room. The houseplant wilts. Kyle runs from the room and hides inside the dryer.',
+        MA('I\'m going to need therapy.'),
+        E('THAT. WAS. AWESOME.'),
+        MI('Hehehehe! Again! AGAIN!'),
+        G('It is perfect. Snoozemonger will never smell us coming. Actually he will. That is the point.')
+      ],
+      choices: [
+        { label: 'Load everyone into Gru\'s jet', to: 'travel_jet' },
+        { label: 'Use the Minion catapult (faster, louder, worse)', to: 'travel_catapult', effects: { chaos: 2 } }
+      ]
+    },
+    gadget_freeze: {
+      chapter: 'Chapter 2 · Gadget Time', title: 'Chill Out',
+      text: [
+        'Gru picks up the freeze ray and gives a dramatic spin.',
+        G('Sleek. Sophisticated. Professional. Unlike a certain gun that goes "pfft."'),
+        'He spins one more time to show off and accidentally pulls the trigger.',
+        FX('FWOOSH ❄️'),
+        'His left foot is now a block of ice glued to the floor.',
+        A('Gru is a popsicle!'),
+        L('I\'ve got a hair dryer in my purse! ...And a crowbar. And a smaller hair dryer.')
+      ],
+      choices: [
+        { label: 'Let Lucy thaw you out and hop to the jet', to: 'travel_jet' },
+        { label: 'Try to wiggle free yourself', to: 'fail_frozen' }
+      ]
+    },
+    edith_choice: {
+      chapter: 'Chapter 2 · Gadget Time', title: 'Edith\'s Pick',
+      text: [
+        'Edith walks straight past the gadget wall to a dusty crate labeled <b>DO NOT OPEN. SERIOUSLY. — GRU</b>.',
+        E('This one.'),
+        'Inside is a big red rocket with a sticker that says "Totally Safe Missile."',
+        G('Edith, no. I put that sticker on as a joke—'),
+        'Edith has already pushed the big red button.',
+        FX('...beep... beep... beepbeepbeep...')
+      ],
+      choices: [
+        { label: 'RUN!!!', to: 'fail_boom', effects: { chaos: 2 } },
+        { label: 'Throw it out the window, fast', to: 'fail_boom', effects: { chaos: 1 } }
+      ]
+    },
+    fail_frozen: {
+      chapter: 'Oops', title: 'Gru-sicle',
+      text: [
+        'Gru wiggles. The ice spreads. Gru wiggles harder. Now he is frozen up to the neck.',
+        G('This... is fine.'),
+        'The Minions hold a short funeral, then try to lick him because he looks like a giant ice pop.',
+        MI('Mmm... Gru-lato!'),
+        'Meanwhile, Dr. Snoozemonger is still stealing bananas. Somewhere a Minion is crying.',
+        N('Let\'s pretend that didn\'t happen.')
+      ],
+      choices: [
+        { label: '⏪ Rewind to the war room', to: 'plan' },
+        { label: '⏪ Start the whole adventure over', to: 'start' }
+      ]
+    },
+    fail_boom: {
+      chapter: 'Oops', title: 'KA-BLAMMO',
+      text: [
+        FX('K A - B O O O O O M'),
+        'When the smoke clears, the house has no roof. Gru\'s eyebrows are gone. Kyle is now a very fluffy, very angry ball of singed fur.',
+        E('...Best. Day. Ever.'),
+        MA('Our house is a convertible now.'),
+        G('Edith, you are grounded until you are forty-five.'),
+        N('The missile went straight through the roof and got stuck in a tree, so at least nobody was hurt. Try again?')
+      ],
+      choices: [
+        { label: '⏪ Rewind to the war room', to: 'plan' },
+        { label: '⏪ Start the whole adventure over', to: 'start' }
+      ]
+    },
+
+    // ───────── CHAPTER 3: GETTING THERE ─────────
+    travel_jet: {
+      chapter: 'Chapter 3 · Getting There', title: 'Up, Up, and Uh-Oh',
+      text: [
+        'Everyone piles into Gru\'s jet. Kyle refuses to come out of the dryer, so Gru carries in the whole dryer.',
+        'Ten seconds after takeoff, the Minions have taken over the radio and are singing loudly, terribly, and with total commitment.',
+        MI('🎵 Bee-do! Bee-do! Bee-doooo! 🎵'),
+        L('Gru, honey, the pillow fortress is dead ahead! Who\'s flying?'),
+        'Gru looks around. Somehow a Minion is in the pilot\'s seat wearing an aviator hat.'
+      ],
+      choices: [
+        { label: 'Let the Minion fly. He looks confident.', to: 'minion_pilot', effects: { chaos: 2 } },
+        { label: 'Hand the controls to Lucy', to: 'lucy_pilot' }
+      ]
+    },
+    travel_catapult: {
+      chapter: 'Chapter 3 · Getting There', title: 'Minion-Powered Flight',
+      text: [
+        'Gru, the girls, Lucy, and Kyle are loaded into the giant Minion catapult. The Minions pull the lever together.',
+        FX('THWANNNNGGGG!!!'),
+        G('WHY DID I AGREE TO THIIIIIIIS!'),
+        A('WHEEEEEE!'),
+        'They fly over three countries and land, softly but suspiciously, in the back of a big truck.',
+        'Margo pulls back a tarp and gasps. The truck is <b>full of bananas</b>. It has a pillow logo on the side.',
+        MA('Okay, I\'ll admit it. That actually worked.')
+      ],
+      choices: [
+        { label: 'Hide in the banana truck and ride it to the lair', to: 'banana_truck', effects: { bananas: 3 } },
+        { label: 'Jump out and go the rest of the way on foot', to: 'lair_entrance' }
+      ]
+    },
+    banana_truck: {
+      chapter: 'Chapter 3 · Getting There', title: 'Bananas. So Many Bananas.',
+      text: [
+        'The truck rumbles toward the pillow fortress. It\'s dark and quiet and smells like a fruit salad.',
+        'From somewhere behind them comes a tiny sound.',
+        FX('*munch*'),
+        'Several Minions have stowed away in the cargo. Their eyes glow in the dark like hungry little lanterns.',
+        G('Do not. Eat. The evidence.'),
+        MI('...Just one? Pwease?')
+      ],
+      choices: [
+        { label: 'Stay strong. Guard the bananas!', to: 'lair_entrance', effects: { bananas: 2 } },
+        { label: '"Okay, ONE banana each."', to: 'fail_eaten', effects: { chaos: 3 } }
+      ]
+    },
+    fail_eaten: {
+      chapter: 'Oops', title: 'Banana Coma',
+      text: [
+        '"One banana each" turns into every banana in the truck in about four seconds.',
+        'The Minions lie in a giant pile of peels, rubbing their bellies, too full to move.',
+        MI('Uuughhh... bello... banana... no more... ...ok one more.'),
+        'Then the truck parks, the doors open, and a squad of guard robots stares at a pile of Minions, a family of five, a dog, and zero bananas.',
+        E('Well. This is awkward.'),
+        N('Being caught red-handed is bad. Being caught yellow-handed is worse.')
+      ],
+      choices: [
+        { label: '⏪ Rewind to the catapult landing', to: 'travel_catapult' },
+        { label: '⏪ Start the whole adventure over', to: 'start' }
+      ]
+    },
+    minion_pilot: {
+      chapter: 'Chapter 3 · Getting There', title: 'Captain Minion',
+      text: [
+        'The Minion pilot cracks his knuckles, salutes, and immediately pushes every button.',
+        FX('BEEP BOOP BWAAAMP — WHOOOOSH'),
+        'The jet does a barrel roll, a loop-de-loop, and a move that probably isn\'t legal in any country. Kyle\'s dryer starts spinning on its own.',
+        L('WOOOO! This is AMAZING!'),
+        G('THIS IS NOT AMAZING!'),
+        'The jet crash-lands straight through the pillow fortress\'s front wall. Feathers everywhere.',
+        MI('Ta-daaa! Kampai!')
+      ],
+      choices: [
+        { label: 'Climb out of the feathers and sneak in', to: 'lair_entrance' },
+        { label: 'Follow the snoring sounds down the hall', to: 'snooze_room' }
+      ]
+    },
+    lucy_pilot: {
+      chapter: 'Chapter 3 · Getting There', title: 'Smooth Landing',
+      text: [
+        'Lucy takes the controls, cranks up a spy movie soundtrack, and pulls off a perfect stealth landing on the fortress roof.',
+        L('Nailed it! Okay, team: quiet like ninjas.'),
+        'Kyle growls at a guard pigeon. Lucy zaps it with her lipstick taser. It is fine, just extremely surprised.',
+        FX('ZZZAP! — coo?'),
+        MA('Okay, Lucy is officially the coolest person here.'),
+        G('Hey!'),
+        MA('Second coolest is Kyle.')
+      ],
+      choices: [
+        { label: 'Drop down the air vent into the lair', to: 'lair_entrance', effects: { bananas: 1 } },
+        { label: 'Peek through the skylight first', to: 'snooze_room' }
+      ]
+    },
+
+    // ───────── CHAPTER 4: THE SHOWDOWN ─────────
+    lair_entrance: {
+      chapter: 'Chapter 4 · The Pillow Fortress', title: 'The Snorebots',
+      text: [
+        'The lair is soft, dim, and very quiet. Everything is made of pillows: the walls, the floor, even the light fixtures.',
+        'Three huge robots in matching nightgowns roll around the corner. Their eyes glow blue.',
+        '<b>SNOREBOTS:</b> INTRUDERS DETECTED. INITIATING... LULLABY.',
+        'Soft harp music starts playing. Gru\'s eyelids begin to droop.',
+        G('Must... stay... awake... someone do something!')
+      ],
+      choices: [
+        { label: 'Blast them with the fart gun', to: 'lair_fart', effects: { chaos: 1 } },
+        { label: 'Lucy, lipstick taser, GO', to: 'lair_lucy' },
+        { label: 'Release Kyle!', to: 'lair_kyle', effects: { chaos: 2 } }
+      ]
+    },
+    lair_fart: {
+      chapter: 'Chapter 4 · The Pillow Fortress', title: 'Toxic Lullaby',
+      text: [
+        FX('PFFFRRRRRAAAAAAAPPPPPPP!!!'),
+        'The green cloud hits the Snorebots. Their air sensors short out. One faints, one cries oil, and the third just says "I NEED A MINUTE" and rolls away.',
+        'Behind them, a pillow door wobbles open and a few bananas roll out.',
+        E('I\'m putting the fart gun on my birthday list.'),
+        MI('PFFT! Hehehe! Hehehehehe!'),
+        A('It smells like a stinky sock that ate a stinky sock.')
+      ],
+      choices: [
+        { label: 'Grab the loose bananas and follow the trail', to: 'banana_vault', effects: { bananas: 2 } },
+        { label: 'Ignore the bananas. Find Snoozemonger.', to: 'snooze_room' }
+      ]
+    },
+    lair_lucy: {
+      chapter: 'Chapter 4 · The Pillow Fortress', title: 'Agent Wilde Gets Busy',
+      text: [
+        'Lucy flips over the first Snorebot, zaps the second with her lipstick taser, and hog-ties the third with her own scarf.',
+        FX('ZAP! ZAP! — *thud*'),
+        L('Whoo! Still got it!'),
+        G('I love that woman.'),
+        MA('Gross. Keep it to yourself.'),
+        'One of the Snorebots drops a keycard marked <b>BANANA VAULT</b>.'
+      ],
+      choices: [
+        { label: 'Use the keycard on the vault', to: 'banana_vault', effects: { bananas: 1 } },
+        { label: 'Skip the vault. Stop the Nap Ray first.', to: 'snooze_room' }
+      ]
+    },
+    lair_kyle: {
+      chapter: 'Chapter 4 · The Pillow Fortress', title: 'Release the Kyle',
+      text: [
+        'Gru opens the dryer door. Kyle shoots out like a furious, spiky meatball.',
+        'He runs straight past the Snorebots, turns around, and bites Gru firmly on the butt.',
+        G('AAAAAAAAAAAAAGH!!!'),
+        'Gru\'s scream is so loud that it overloads all three Snorebots\' sleep sensors. They explode into a cloud of feathers.',
+        A('Good boy, Kyle!'),
+        G('He is NOT a good boy! He is a GOBLIN!'),
+        N('Kyle wags his tail. He knows what he did.')
+      ],
+      choices: [
+        { label: 'Limp heroically toward the banana vault', to: 'banana_vault' },
+        { label: 'Limp heroically toward the snoring', to: 'snooze_room' }
+      ]
+    },
+    banana_vault: {
+      chapter: 'Chapter 4 · The Pillow Fortress', title: 'The Banana Vault',
+      text: [
+        'The vault door swings open, and golden light floods out. It\'s a mountain of bananas, all the bananas on Earth, piled to the ceiling.',
+        'The Minions stand very still. One of them sheds a single tear.',
+        MI('...Banana. <b>BANANAAAAAAAAAAA!!!</b>'),
+        G('Okay. Okay okay okay. Nobody move. We need to get these out <i>carefully</i>—'),
+        'A Minion is already doing a running jump.'
+      ],
+      choices: [
+        { label: 'Organize a careful banana bucket brigade', to: 'showdown', effects: { bananas: 4 } },
+        { label: 'Let them dive in. They\'ve earned this.', to: 'showdown', effects: { bananas: 2, chaos: 3 } }
+      ]
+    },
+    snooze_room: {
+      chapter: 'Chapter 4 · The Pillow Fortress', title: 'The Nap Ray Chamber',
+      text: [
+        'In the center of a huge room is the <b>Eternal Nap Ray</b>: a giant cannon covered in quilts and powered by a big, glowing banana battery.',
+        'Margo squints at the control panel.',
+        MA('Hey. The power cable plugs in right here. It\'s labeled "Do not unplug." He actually labeled his weak spot.'),
+        E('Or we could blow it up.'),
+        MA('Or we could unplug it, like normal people.'),
+        'Before they can decide, a spotlight snaps on.',
+        V('Well, well, well. Guests. How... exhausting.')
+      ],
+      choices: [
+        { label: 'Have Margo yank the plug!', to: 'showdown', effects: { bananas: 2 } },
+        { label: 'Distract him and sneak to the vault first', to: 'banana_vault' }
+      ]
+    },
+    showdown: {
+      chapter: 'Chapter 4 · The Pillow Fortress', title: 'Pajama Party of Doom',
+      text: [
+        'Dr. Snoozemonger floats down on a hovering mattress, aiming the Nap Ray straight at Gru.',
+        V('You can\'t stop me, Gru. In ten seconds the whole world will take a nap. No more alarm clocks. No more Mondays. Just... sleep.'),
+        G('That... actually sounds kind of nice? NO! Focus, Gru!'),
+        'The Nap Ray hums. Everyone starts yawning. Even Lucy. Even Kyle. The Minions are already snoring in a pile.',
+        MA('Gru... do... something...'),
+        A('*yaaawn* ...I think it\'s a fluffy emergency.')
+      ],
+      choices: [
+        { label: 'One last blast from the fart gun', to: 'final_fart' },
+        { label: 'Agnes, it\'s unicorn time', to: 'final_unicorn' },
+        { label: 'WAKE THE MINIONS!', to: 'final_minions', effects: { chaos: 2 } }
+      ]
+    },
+    final_fart: {
+      chapter: 'Chapter 4 · The Pillow Fortress', title: 'The Final Toot',
+      text: [
+        'Gru raises the fart gun, aims, and pulls the trigger.',
+        FX('...pfft.'),
+        'It\'s out of gas. Snoozemonger laughs a slow, sleepy laugh.',
+        V('Ha... ha... ha... *yawn*'),
+        'But the tiny pfft drifts right up Kyle\'s nose. His eyes snap open. He leaps, flies through the air, and bites Snoozemonger\'s fluffy slipper.',
+        V('OWWW! MY SLIPPER! THESE WERE A GIFT FROM MY MOTHER!'),
+        'He drops the remote. Gru grabs it.'
+      ],
+      choices: [
+        { label: 'Smash the Nap Ray\'s self-destruct button', to: '@finale', effects: { chaos: 1 } },
+        { label: 'Calmly switch it off and grab the banana battery', to: '@finale', effects: { bananas: 2 } }
+      ]
+    },
+    final_unicorn: {
+      chapter: 'Chapter 4 · The Pillow Fortress', title: 'IT\'S SO FLUFFY',
+      text: [
+        'Agnes stands up, unzips her suitcase, and pulls out the fluffy unicorn. She holds it high above her head.',
+        A('<b>IT\'S SO FLUFFY!!!</b>'),
+        'A wave of pure fluffiness rolls across the room. Snoozemonger freezes and his lip begins to wobble.',
+        V('Is that... a fluffy unicorn? I... I\'ve always wanted a fluffy unicorn...'),
+        'He drops the Nap Ray, floats down, and gently hugs the unicorn. Agnes pats his nightcap.',
+        A('See? He just needed a hug.'),
+        G('I... cannot believe that worked.')
+      ],
+      choices: [
+        { label: 'Let Lucy cuff him while he\'s busy hugging', to: '@finale', effects: { bananas: 2 } },
+        { label: 'Let Edith "accidentally" blow up the Nap Ray', to: '@finale', effects: { chaos: 2 } }
+      ]
+    },
+    final_minions: {
+      chapter: 'Chapter 4 · The Pillow Fortress', title: 'BANANA!',
+      text: [
+        'Gru takes a deep breath and yells the only word guaranteed to wake a Minion.',
+        G('<b>BANANAAAAAAAAAAA!!!</b>'),
+        'A hundred Minion eyes pop open. Then a hundred Minions launch at Snoozemonger in a giant yellow avalanche.',
+        MI('BANANAAAAA! Para tú! Tank yu! BLEEEEH!'),
+        V('NO! Not the overalls! Get off! Who\'s licking my ear?!'),
+        'In ten seconds Snoozemonger is under a Minion pile, the Nap Ray has googly eyes stuck all over it, and somebody is wearing his nightcap.'
+      ],
+      choices: [
+        { label: 'Order the Minions to carry the bananas home', to: '@finale', effects: { bananas: 2 } },
+        { label: 'Let the Minions throw a victory party right here', to: '@finale', effects: { chaos: 3 } }
+      ]
+    },
+
+    // ───────── ENDINGS ─────────
+    end_hero: {
+      chapter: 'The End', title: 'The Greatest Banana Rescue in History',
+      ending: true, finale: true,
+      text: [
+        'Every last banana makes it home. The Minions throw a parade, and the world\'s fruit bowls are full again.',
+        'Dr. Snoozemonger gets locked up at the Anti-Villain League. Agnes visits on weekends, and they have tea parties. He is much nicer after a good nap.',
+        L('Great work, team! The AVL is giving you a medal, Gru.'),
+        G('Finally! Recognition!'),
+        'The medal is shaped like a banana. A Minion eats it immediately.',
+        E('Can we do another one tomorrow?'),
+        MI('Tulaliloo ti amo! 🍌'),
+        N('Ending: HERO. Lots of bananas, not too much chaos. Gru is proud. Kyle is still not sorry.')
+      ]
+    },
+    end_chaos: {
+      chapter: 'The End', title: 'The Banana Water Park',
+      ending: true, finale: true,
+      text: [
+        'You won! Dr. Snoozemonger is caught! ...But the Minions have also taken over the pillow fortress.',
+        'In about an hour they turn it into the world\'s first banana-themed water park, with slides, a lazy river, and a gift shop that only sells bananas.',
+        G('How is there a gift shop. We have been here for one hour.'),
+        MA('Honestly? This is the best vacation we\'ve ever had.'),
+        'Dr. Snoozemonger is now the lifeguard. He is asleep in the chair.',
+        'Kyle is in charge of security. He bites everyone, Gru most of all.',
+        N('Ending: TOTAL CHAOS. The world is saved, technically. Play again for a less chaotic ending.')
+      ]
+    },
+    end_nap: {
+      chapter: 'The End', title: 'A Well-Deserved Nap',
+      ending: true, finale: true,
+      text: [
+        'You did it! The Nap Ray is off and Snoozemonger is handcuffed to his own hovering mattress.',
+        'There\'s just one problem: most of the bananas are still missing. A few got squashed, a few rolled away, and a few are unaccounted for (one Minion looks very full).',
+        L('Hey, we saved the world. The bananas will turn up!'),
+        'Everyone is so tired that they curl up on the fortress\'s giant pillows and fall asleep. Even Gru. Even Edith.',
+        A('*whispering* Goodnight, fluffy unicorn. Goodnight, Kyle. Goodnight, sleepy bad guy.'),
+        V('*from the mattress, muffled* ...goodnight.'),
+        N('Ending: SLEEPY VICTORY. Recover more bananas next time for the hero ending!')
+      ]
+    }
+  }
+};
+
+function resetState() { return { chaos: 0, bananas: 0 }; }
+
+function applyEffects(state, effects) {
+  var next = { chaos: state.chaos, bananas: state.bananas };
+  if (effects) {
+    for (var k in effects) if (k in next) next[k] = Math.max(0, next[k] + effects[k]);
+  }
+  return next;
+}
+
+function pickFinale(state) {
+  if (state.chaos >= 8) return 'end_chaos';
+  if (state.bananas >= 6) return 'end_hero';
+  return 'end_nap';
+}
+</script>
+
+<script>
+(function () {
+  var state = resetState();
+  var view = document.getElementById('passage');
+
+  function updateStats() {
+    document.getElementById('s-bananas').textContent = state.bananas;
+    document.getElementById('s-chaos').textContent = state.chaos;
+  }
+
+  function deltaText(effects) {
+    if (!effects) return '';
+    var bits = [];
+    if (effects.bananas) bits.push((effects.bananas > 0 ? '+' : '') + effects.bananas + ' 🍌');
+    if (effects.chaos) bits.push((effects.chaos > 0 ? '+' : '') + effects.chaos + ' chaos');
+    return bits.join('   ');
+  }
+
+  function show(id, effects) {
+    var p = STORY.passages[id];
+    var html = '';
+    if (p.chapter) html += '<p class="chapter">' + p.chapter + '</p>';
+    html += '<h1>' + p.title + '</h1>';
+    var d = deltaText(effects);
+    if (d) html += '<p class="delta">' + d + '</p>';
+    html += p.text.map(function (t) { return '<p>' + t + '</p>'; }).join('');
+    if (p.ending) {
+      html += '<div class="theend"><strong>THE END</strong>Bananas recovered: ' + state.bananas +
+        ' · Minion chaos: ' + state.chaos + '<ol class="choices"><li><button type="button" data-restart>' +
+        '<span class="key">1</span>Play again</button></li></ol></div>';
+    } else {
+      html += '<ol class="choices">' + p.choices.map(function (c, i) {
+        return '<li><button type="button" data-i="' + i + '"><span class="key">' + (i + 1) + '</span>' + c.label + '</button></li>';
+      }).join('') + '</ol>';
+    }
+    view.className = 'passage';
+    view.innerHTML = html;
+    void view.offsetWidth;
+    view.className = 'passage fade';
+    view.dataset.id = id;
+    window.scrollTo(0, 0);
+  }
+
+  function choose(i) {
+    var p = STORY.passages[view.dataset.id];
+    var c = p.choices && p.choices[i];
+    if (!c) return;
+    state = applyEffects(state, c.effects);
+    updateStats();
+    show(c.to === '@finale' ? pickFinale(state) : c.to, c.effects);
+  }
+
+  function restart() {
+    state = resetState();
+    updateStats();
+    show(STORY.start);
+  }
+
+  view.addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    if (b.hasAttribute('data-restart')) restart();
+    else choose(+b.dataset.i);
+  });
+  document.getElementById('restart').addEventListener('click', restart);
+  document.addEventListener('keydown', function (e) {
+    var n = parseInt(e.key, 10);
+    if (!(n >= 1 && n <= 9)) return;
+    var p = STORY.passages[view.dataset.id];
+    if (p.ending) { if (n === 1) restart(); }
+    else choose(n - 1);
+  });
+
+  restart();
+})();
+</script>
+</body>
+</html>
