@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="160" viewBox="0 0 64 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M32 6 L38 24 L56 16 L46 32 L62 42 L44 46 L50 66 L34 54 L22 72 L22 52 L4 54 L16 40 L2 26 L20 26 L18 8 L28 22Z" fill="#ffb02e" stroke="#1a1a1a" stroke-width="1.5"/>
+    <path d="M32 18 L36 30 L48 26 L41 36 L50 42 L38 44 L40 56 L32 48 L24 58 L25 46 L14 44 L22 36 L14 28 L26 30Z" fill="#ffe066"/>
+    <text x="17" y="43" font-size="10" font-family="monospace" font-weight="bold" fill="#c2261c">BOOM</text></svg>

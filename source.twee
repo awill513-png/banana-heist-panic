@@ -1,0 +1,750 @@
+:: StoryTitle
+Banana Heist Panic
+
+:: StoryData
+{
+  "ifid": "FE741D8B-F801-42A0-98B8-C85E6E418B1C",
+  "format": "Harlowe",
+  "format-version": "3.3.9",
+  "start": "Start"
+}
+
+:: StoryStylesheet [stylesheet]
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:ital,wght@0,400;0,700;0,800;1,400&display=swap');
+
+html, body { background: #2e5eaa; }
+
+tw-story {
+  background: #2e5eaa;
+  background-image: radial-gradient(rgba(255,255,255,0.08) 2px, transparent 2px);
+  background-size: 26px 26px;
+  color: #23252e;
+  font-family: 'Nunito', system-ui, sans-serif;
+  font-size: 1.15rem;
+  line-height: 1.6;
+}
+
+tw-passage {
+  background: #fffaf0;
+  border: 4px solid #ffd43b;
+  border-radius: 16px;
+  padding: 1.75rem 2rem;
+  box-shadow: 0 10px 0 #1f3f78, 0 14px 30px rgba(0, 0, 0, 0.35);
+}
+
+tw-passage h1, tw-passage h2 {
+  font-family: 'Bangers', 'Impact', sans-serif;
+  font-weight: normal;
+  letter-spacing: 1.5px;
+  color: #2e5eaa;
+  line-height: 1.15;
+  margin: 0.15em 0 0.45em;
+}
+tw-passage h1 { font-size: 2.6rem; color: #e0a800; text-shadow: 2px 2px 0 #2e5eaa; }
+tw-passage h2 { font-size: 2rem; }
+
+.chapter {
+  font-family: 'Courier New', ui-monospace, monospace;
+  font-size: 0.8rem; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; color: #7a7f8a;
+}
+
+.stats {
+  display: flex; flex-wrap: wrap; gap: 0.25em 1.25em;
+  font-family: 'Courier New', ui-monospace, monospace; font-size: 0.9rem;
+  background: #23252e; color: #fffaf0;
+  border-radius: 8px; padding: 0.45em 0.8em; margin-bottom: 1em;
+}
+.stats b { color: #ffd43b; }
+
+.scene {
+  display: flex; justify-content: center; align-items: flex-end; flex-wrap: wrap; gap: 6px;
+  padding: 14px 10px 10px; margin: 0 0 0.75em;
+  background: linear-gradient(#1b2034, #2a3150);
+  border-radius: 12px; border-bottom: 6px solid #ffd43b;
+}
+.scene img { width: 72px; height: auto; margin: 0; border-radius: 0; animation: bob 1.8s ease-in-out infinite; }
+.scene img:nth-child(2n) { animation-delay: -0.6s; }
+.scene img:nth-child(3n) { animation-delay: -1.2s; }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+.say { font-weight: 800; padding: 0 0.3em; border-radius: 4px; }
+.gru { background: #2b2b30; color: #fff; }
+.lucy { background: #2fb3a8; color: #14161f; }
+.margo { background: #4a7fd4; color: #fff; }
+.edith { background: #ff5c9a; color: #14161f; }
+.agnes { background: #b38bff; color: #14161f; }
+.minions { background: #ffd43b; color: #14161f; }
+.villain { background: #6b4fc4; color: #fff; }
+.bot { background: #9aa0ad; color: #14161f; }
+.sfx { font-family: 'Courier New', ui-monospace, monospace; font-weight: 800; letter-spacing: 2px; color: #3b8a1e; }
+.note { color: #666; font-style: italic; }
+.ending { font-family: 'Bangers', 'Impact', sans-serif; letter-spacing: 1px; font-size: 1.3rem; color: #c2261c; }
+.credit { font-size: 0.85em; color: #555; }
+
+tw-link, .enchantment-link {
+  display: inline-block;
+  color: #23252e; font-weight: 800; text-decoration: none;
+  background: #ffd43b; border: 2px solid #23252e; border-radius: 10px;
+  padding: 0.35em 0.9em; margin: 0.3em 0;
+  box-shadow: 0 3px 0 #23252e;
+  transition: transform 0.08s;
+}
+tw-link:hover, .enchantment-link:hover { color: #23252e; background: #ffe680; transform: translateY(-2px); }
+
+tw-sidebar { color: #fffaf0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .scene img { animation: none; }
+  tw-link { transition: none; }
+}
+
+@media (max-width: 600px) {
+  tw-story { font-size: 1.05rem; padding: 1rem; }
+  tw-passage { padding: 1.1rem; }
+  tw-passage h1 { font-size: 2rem; }
+  .scene img { width: 56px; }
+  tw-sidebar { position: static; display: flex; flex-direction: row; justify-content: flex-end; width: auto; height: auto; margin: -0.5em 0 0.25em; }
+  tw-sidebar tw-icon { font-size: 1.6rem; margin: 0 0 0 0.5em; }
+}
+
+:: StoryHeader [header]
+(unless: (passage:)'s name is "Start" or (passage:)'s name is "About")[<div class="stats"><span>🍌 Bananas recovered: <b>$bananas</b></span><span>💥 Minion chaos: <b>$chaos</b></span></div>]
+
+:: Start
+{(unless: $endings is a dataset)[(set: $endings to (ds:))]
+(set: $bananas to 0, $chaos to 0)}
+<div class="scene"><img src="img/banana.svg" alt="A bunch of bananas"><img src="img/minion.svg" alt="Minion character card with a banana"><img src="img/snoozemonger.svg" alt="Dr. Snoozemonger in a purple nightcap and striped pajamas, fast asleep"><img src="img/fartgun.svg" alt="A chunky fart gun puffing a green cloud"></div>
+# Banana Heist Panic
+
+Every banana on Earth has vanished. The Minions are not okay. Only Gru, Lucy, Margo, Edith, Agnes, Kyle, and one very fluffy unicorn can save the day.
+
+Your choices decide how it goes. Some go great. Some go //very// badly.
+
+[[Start the mission!->The Great Banana Alarm]]
+[[How to play and credits->About]]
+
+(if: $endings's length > 0)[<span class="note">Endings discovered: (print: $endings's length) of 3</span>]
+
+:: About
+<div class="scene"><img src="img/gru.svg" alt="Gru character card with a scarf"><img src="img/lucy.svg" alt="Lucy character card with lipstick"><img src="img/margo.svg" alt="Margo character card with books"><img src="img/edith.svg" alt="Edith character card with an explosion"><img src="img/agnes.svg" alt="Agnes character card with a bow"><img src="img/kyle.svg" alt="Kyle character card with a bone"></div>
+## How to play
+
+Click a choice to decide what happens next. Some choices change the two counters at the top:
+
+🍌 ''Bananas recovered'': save enough of them for the best ending.
+💥 ''Minion chaos'': let the Minions run wild and things get... interesting.
+
+Wrong turns lead to silly disasters, but you can always rewind. There are ''3 endings''. Can you find them all?
+
+## Credits
+<span class="credit">A non-commercial fan game made for fun. Gru, Lucy, Margo, Edith, Agnes, Kyle, and the Minions belong to Illumination and Universal Pictures. Dr. Snoozemonger, the story, and the pictures are original. Built with [Twine](https://twinery.org) and the Harlowe story format.</span>
+
+[[Back to the title screen->Start]]
+[[Start the mission!->The Great Banana Alarm]]
+
+:: The Great Banana Alarm
+<div class="scene"><img src="img/gru.svg" alt="Gru character card"><img src="img/minion.svg" alt="Minion character card"><img src="img/minion2.svg" alt="Minion character card saying Bello"><img src="img/minion.svg" alt="Minion character card"></div>
+<div class="chapter">Chapter 1 · Uh-Oh</div>
+## The Great Banana Alarm
+
+It is a peaceful Tuesday morning in Gru's underground lab. Then every alarm in the building goes off at once.
+
+<span class="sfx">WEE-OOO WEE-OOO WEE-OOO</span>
+
+A Minion is riding the alarm light like a rodeo bull. Another one is crying into an empty fruit bowl. Forty more are running in circles, screaming.
+
+<span class="say minions">MINIONS:</span> BANANAAAA?! NO BANANA! NO BANANAAAA!
+<span class="say gru">GRU:</span> Calm down! CALM DOWN! What happened to the bananas?
+
+A Minion holds up a newspaper upside down. The headline reads: ''EVERY BANANA ON EARTH MYSTERIOUSLY VANISHES.''
+
+[[Run upstairs to watch the news with the girls->Breaking News]]
+[[Call Lucy at the Anti-Villain League->Agent Wilde Reporting]]
+(link: "Send the Minions to investigate (what could go wrong?)")[(set: $chaos to it + 2)(go-to: "The Investigation")]
+
+:: Breaking News
+<div class="scene"><img src="img/margo.svg" alt="Margo character card"><img src="img/edith.svg" alt="Edith character card"><img src="img/agnes.svg" alt="Agnes character card"><img src="img/kyle.svg" alt="Kyle character card"><img src="img/snoozemonger.svg" alt="Dr. Snoozemonger on TV, asleep in his nightcap"></div>
+<div class="chapter">Chapter 1 · Uh-Oh</div>
+## Breaking News
+
+Margo, Edith, and Agnes are on the couch. Kyle the dog is chewing a remote control that is not his.
+
+On TV, a man in silk pajamas and a nightcap waves from a floating fortress shaped like a giant pillow.
+
+<span class="say villain">DR. SNOOZEMONGER:</span> Greetings, world. I have taken ALL your bananas. They will power my ''Eternal Nap Ray'', which will put the entire planet to sleep. Forever. Shhhhh.
+<span class="say margo">MARGO:</span> Great. Another villain with a theme.
+<span class="say edith">EDITH:</span> Can we blow up his pillow? Please? I'll do my homework for a week.
+<span class="say agnes">AGNES:</span> He looks sleepy. Maybe he just needs a hug.
+<span class="say gru">GRU:</span> Nobody is hugging the villain.
+
+[[Head to the war room to make a plan->The War Room]]
+[[Wait, why is Agnes packing a suitcase?->Emergency Supplies]]
+
+:: Agent Wilde Reporting
+<div class="scene"><img src="img/lucy.svg" alt="Lucy character card"><img src="img/gru.svg" alt="Gru character card"><img src="img/banana.svg" alt="A bunch of bananas"><img src="img/minion.svg" alt="Minion character card"></div>
+<div class="chapter">Chapter 1 · Uh-Oh</div>
+## Agent Wilde Reporting
+
+Before Gru can finish dialing, Lucy crashes through the skylight on a rope, does three cartwheels, and lands in a perfect pose.
+
+<span class="say lucy">LUCY:</span> Gru, honey! The AVL has a lead! The banana thief is ''Dr. Snoozemonger'', the world's sleepiest supervillain.
+<span class="say gru">GRU:</span> How did you get here so fast? I had not even pressed call yet.
+<span class="say lucy">LUCY:</span> I was already on the roof. I like to be early! Also I brought my lipstick taser, my grappling hook, and snacks.
+
+<span class="note">The snacks are bananas. Forty Minion heads swivel toward Lucy at the exact same time.</span>
+
+<span class="say lucy">LUCY:</span> ...Okay, the snacks are gone now.
+
+(link: "To the war room!")[(set: $bananas to it + 1)(go-to: "The War Room")]
+[[Check on the girls first->Breaking News]]
+
+:: The Investigation
+<div class="scene"><img src="img/minion.svg" alt="Minion character card"><img src="img/minion2.svg" alt="Minion character card saying Bello"><img src="img/minion.svg" alt="Minion character card"><img src="img/gru.svg" alt="Gru character card"></div>
+<div class="chapter">Chapter 1 · Uh-Oh</div>
+## The Investigation
+
+Gru sends three of his best Minions to investigate. Fourteen hours later (it has been nine minutes) they come back.
+
+One is wearing a detective hat. One has a magnifying glass, which is a donut. The third is asleep and snoring loudly.
+
+<span class="say minions">MINIONS:</span> Bello! We find... CLUE!
+
+They proudly present the clue: a single slipper, fuzzy and pink, monogrammed with "Dr. S."
+
+<span class="say gru">GRU:</span> Hm. Slippers. Snoring. A banana thief who wants everyone asleep... Wait. Why is that one still sleeping?
+
+<span class="sfx">ZZZZZ... ba-na-naaa... zzz</span>
+
+<span class="note">Minion chaos is rising. One of them has now put the slipper on his head.</span>
+
+[[Turn on the news for answers->Breaking News]]
+[[Call Lucy, a real professional->Agent Wilde Reporting]]
+
+:: Emergency Supplies
+<div class="scene"><img src="img/agnes.svg" alt="Agnes character card"><img src="img/unicorn.svg" alt="A fluffy white stuffed unicorn with a rainbow mane and golden horn"><img src="img/gru.svg" alt="Gru character card"><img src="img/margo.svg" alt="Margo character card"></div>
+<div class="chapter">Chapter 1 · Uh-Oh</div>
+## Emergency Supplies
+
+Agnes is stuffing a tiny suitcase. Inside: a juice box, a flashlight, and the fluffy unicorn.
+
+<span class="say gru">GRU:</span> Agnes, sweetie, we are going to fight a supervillain. You do not need the unicorn.
+<span class="say agnes">AGNES:</span> Unicorn is for emergencies.
+<span class="say gru">GRU:</span> What kind of emergencies?
+<span class="say agnes">AGNES:</span> ''Fluffy'' emergencies.
+
+Gru opens his mouth, closes it, and decides not to argue with a seven-year-old with this level of confidence.
+
+<span class="say margo">MARGO:</span> Just let her bring it. You know you're going to lose.
+
+[[Fine. Unicorn comes. To the war room!->The War Room]]
+[[Watch the rest of the villain's broadcast->Breaking News]]
+
+:: The War Room
+<div class="scene"><img src="img/gru.svg" alt="Gru character card"><img src="img/edith.svg" alt="Edith character card"><img src="img/fartgun.svg" alt="The fart gun, puffing a green cloud"><img src="img/minion.svg" alt="Minion character card"></div>
+<div class="chapter">Chapter 2 · Gadget Time</div>
+## The War Room
+
+Gru clicks to a slide titled ''OPERATION: GET THE BANANAS BACK (AND ALSO SAVE THE WORLD)''. The next slide is a stick figure of Gru punching a pillow.
+
+<span class="say gru">GRU:</span> Step one: we pick our weapon. Step two: we fly to the pillow fortress. Step three: we win. Questions?
+<span class="say edith">EDITH:</span> Is step three explosions?
+<span class="say gru">GRU:</span> Possibly.
+<span class="say edith">EDITH:</span> Yesss.
+
+The gadget wall slides open. Front and center, gleaming, is the legendary ''fart gun''.
+
+<span class="say minions">MINIONS:</span> Hehehe... PFFFT! Hehehehe!
+
+(link: "Grab the fart gun (obviously)")[(set: $chaos to it + 1)(go-to: "Test Fire")]
+[[Take the freeze ray, the mature choice->Chill Out]]
+(link: "Let Edith choose the weapon")[(set: $chaos to it + 2)(go-to: "Edith's Pick")]
+
+:: Test Fire
+<div class="scene"><img src="img/gru.svg" alt="Gru character card"><img src="img/fartgun.svg" alt="The fart gun, puffing a green cloud"><img src="img/kyle.svg" alt="Kyle character card"><img src="img/margo.svg" alt="Margo character card"><img src="img/edith.svg" alt="Edith character card"></div>
+<div class="chapter">Chapter 2 · Gadget Time</div>
+## Test Fire
+
+Gru hoists the fart gun onto his shoulder. A Minion hands him safety goggles, then puts on a gas mask and two more pairs of goggles.
+
+<span class="say gru">GRU:</span> Let us test it. Stand back.
+
+<span class="sfx">PFFFFRRRRRAAAAPPP!!!</span>
+
+A green cloud fills the room. The houseplant wilts. Kyle runs from the room and hides inside the dryer.
+
+<span class="say margo">MARGO:</span> I'm going to need therapy.
+<span class="say edith">EDITH:</span> THAT. WAS. AWESOME.
+<span class="say minions">MINIONS:</span> Hehehehe! Again! AGAIN!
+<span class="say gru">GRU:</span> It is perfect. Snoozemonger will never smell us coming. Actually he will. That is the point.
+
+[[Load everyone into Gru's jet->Up, Up, and Uh-Oh]]
+(link: "Use the Minion catapult (faster, louder, worse)")[(set: $chaos to it + 2)(go-to: "Minion-Powered Flight")]
+
+:: Chill Out
+<div class="scene"><img src="img/gru.svg" alt="Gru character card"><img src="img/ice.svg" alt="A grumpy face frozen inside a block of ice"><img src="img/agnes.svg" alt="Agnes character card"><img src="img/lucy.svg" alt="Lucy character card"></div>
+<div class="chapter">Chapter 2 · Gadget Time</div>
+## Chill Out
+
+Gru picks up the freeze ray and gives a dramatic spin.
+
+<span class="say gru">GRU:</span> Sleek. Sophisticated. Professional. Unlike a certain gun that goes "pfft."
+
+He spins one more time to show off and accidentally pulls the trigger.
+
+<span class="sfx">FWOOSH ❄️</span>
+
+His left foot is now a block of ice glued to the floor.
+
+<span class="say agnes">AGNES:</span> Gru is a popsicle!
+<span class="say lucy">LUCY:</span> I've got a hair dryer in my purse! ...And a crowbar. And a smaller hair dryer.
+
+[[Let Lucy thaw you out and hop to the jet->Up, Up, and Uh-Oh]]
+[[Try to wiggle free yourself->Gru-sicle]]
+
+:: Edith's Pick
+<div class="scene"><img src="img/edith.svg" alt="Edith character card"><img src="img/missile.svg" alt="A red rocket with a sticker that says SAFE"><img src="img/gru.svg" alt="Gru character card"></div>
+<div class="chapter">Chapter 2 · Gadget Time</div>
+## Edith's Pick
+
+Edith walks straight past the gadget wall to a dusty crate labeled ''DO NOT OPEN. SERIOUSLY. (GRU)''.
+
+<span class="say edith">EDITH:</span> This one.
+
+Inside is a big red rocket with a sticker that says "Totally Safe Missile."
+
+<span class="say gru">GRU:</span> Edith, no. I put that sticker on as a joke—
+
+Edith has already pushed the big red button.
+
+<span class="sfx">...beep... beep... beepbeepbeep...</span>
+
+(link: "RUN!!!")[(set: $chaos to it + 2)(go-to: "KA-BLAMMO")]
+(link: "Throw it out the window, fast")[(set: $chaos to it + 1)(go-to: "KA-BLAMMO")]
+
+:: Gru-sicle
+<div class="scene"><img src="img/ice.svg" alt="Gru frozen inside a block of ice"><img src="img/minion.svg" alt="Minion character card"><img src="img/minion2.svg" alt="Minion character card saying Bello"></div>
+<div class="chapter">Oops</div>
+## Gru-sicle
+
+Gru wiggles. The ice spreads. Gru wiggles harder. Now he is frozen up to the neck.
+
+<span class="say gru">GRU:</span> This... is fine.
+
+The Minions hold a short funeral, then try to lick him because he looks like a giant ice pop.
+
+<span class="say minions">MINIONS:</span> Mmm... Gru-lato!
+
+Meanwhile, Dr. Snoozemonger is still stealing bananas. Somewhere a Minion is crying.
+
+<span class="note">Let's pretend that didn't happen.</span>
+
+[[⏪ Rewind to the war room->The War Room]]
+[[⏪ Start the whole adventure over->Start]]
+
+:: KA-BLAMMO
+<div class="scene"><img src="img/boom.svg" alt="A huge cartoon explosion that says BOOM"><img src="img/edith.svg" alt="Edith character card"><img src="img/margo.svg" alt="Margo character card"><img src="img/kyle.svg" alt="Kyle character card"></div>
+<div class="chapter">Oops</div>
+## KA-BLAMMO
+
+<span class="sfx">K A - B O O O O O M</span>
+
+When the smoke clears, the house has no roof. Gru's eyebrows are gone. Kyle is now a very fluffy, very angry ball of singed fur.
+
+<span class="say edith">EDITH:</span> ...Best. Day. Ever.
+<span class="say margo">MARGO:</span> Our house is a convertible now.
+<span class="say gru">GRU:</span> Edith, you are grounded until you are forty-five.
+
+<span class="note">The missile went straight through the roof and got stuck in a tree, so at least nobody was hurt. Try again?</span>
+
+[[⏪ Rewind to the war room->The War Room]]
+[[⏪ Start the whole adventure over->Start]]
+
+:: Up, Up, and Uh-Oh
+<div class="scene"><img src="img/minion.svg" alt="Minion character card"><img src="img/minion2.svg" alt="Minion character card saying Bello"><img src="img/lucy.svg" alt="Lucy character card"><img src="img/gru.svg" alt="Gru character card"><img src="img/kyle.svg" alt="Kyle character card"></div>
+<div class="chapter">Chapter 3 · Getting There</div>
+## Up, Up, and Uh-Oh
+
+Everyone piles into Gru's jet. Kyle refuses to come out of the dryer, so Gru carries in the whole dryer.
+
+Ten seconds after takeoff, the Minions have taken over the radio and are singing loudly, terribly, and with total commitment.
+
+<span class="say minions">MINIONS:</span> 🎵 La la la BANANAAA! La la la... BANANAAAAA! 🎵
+<span class="say lucy">LUCY:</span> Gru, honey, the pillow fortress is dead ahead! Who's flying?
+
+Gru looks around. Somehow a Minion is in the pilot's seat wearing an aviator hat.
+
+(link: "Let the Minion fly. He looks confident.")[(set: $chaos to it + 2)(go-to: "Captain Minion")]
+[[Hand the controls to Lucy->Smooth Landing]]
+
+:: Minion-Powered Flight
+<div class="scene"><img src="img/gru.svg" alt="Gru character card"><img src="img/agnes.svg" alt="Agnes character card"><img src="img/margo.svg" alt="Margo character card"><img src="img/banana.svg" alt="A bunch of bananas"></div>
+<div class="chapter">Chapter 3 · Getting There</div>
+## Minion-Powered Flight
+
+Gru, the girls, Lucy, and Kyle are loaded into the giant Minion catapult. The Minions pull the lever together.
+
+<span class="sfx">THWANNNNGGGG!!!</span>
+
+<span class="say gru">GRU:</span> WHY DID I AGREE TO THIIIIIIIS!
+<span class="say agnes">AGNES:</span> WHEEEEEE!
+
+They fly over three countries and land, softly but suspiciously, in the back of a big truck.
+
+Margo pulls back a tarp and gasps. The truck is ''full of bananas''. It has a pillow logo on the side.
+
+<span class="say margo">MARGO:</span> Okay, I'll admit it. That actually worked.
+
+(link: "Hide in the banana truck and ride it to the lair")[(set: $bananas to it + 3)(go-to: "So Many Bananas")]
+[[Jump out and go the rest of the way on foot->The Snorebots]]
+
+:: So Many Bananas
+<div class="scene"><img src="img/banana.svg" alt="A bunch of bananas"><img src="img/minion.svg" alt="Minion character card"><img src="img/minion2.svg" alt="Minion character card saying Bello"><img src="img/gru.svg" alt="Gru character card"></div>
+<div class="chapter">Chapter 3 · Getting There</div>
+## Bananas. So Many Bananas.
+
+The truck rumbles toward the pillow fortress. It's dark and quiet and smells like a fruit salad.
+
+From somewhere behind them comes a tiny sound.
+
+<span class="sfx">munch</span>
+
+Several Minions have stowed away in the cargo. Their eyes glow in the dark like hungry little lanterns.
+
+<span class="say gru">GRU:</span> Do not. Eat. The evidence.
+<span class="say minions">MINIONS:</span> ...Just one? Pwease?
+
+(link: "Stay strong. Guard the bananas!")[(set: $bananas to it + 2)(go-to: "The Snorebots")]
+(link: "Okay, ONE banana each.")[(set: $chaos to it + 3)(go-to: "Banana Coma")]
+
+:: Banana Coma
+<div class="scene"><img src="img/minion.svg" alt="Minion character card"><img src="img/banana.svg" alt="A bunch of bananas"><img src="img/snorebot.svg" alt="A grey robot wearing a pink nightgown"><img src="img/edith.svg" alt="Edith character card"></div>
+<div class="chapter">Oops</div>
+## Banana Coma
+
+"One banana each" turns into every banana in the truck in about four seconds.
+
+The Minions lie in a giant pile of peels, rubbing their bellies, too full to move.
+
+<span class="say minions">MINIONS:</span> Uuughhh... bello... banana... no more... ...ok one more.
+
+Then the truck parks, the doors open, and a squad of guard robots stares at a pile of Minions, a family of five, a dog, and zero bananas.
+
+<span class="say edith">EDITH:</span> Well. This is awkward.
+
+<span class="note">Being caught red-handed is bad. Being caught yellow-handed is worse.</span>
+
+[[⏪ Rewind to the catapult landing->Minion-Powered Flight]]
+[[⏪ Start the whole adventure over->Start]]
+
+:: Captain Minion
+<div class="scene"><img src="img/minion.svg" alt="Minion character card"><img src="img/lucy.svg" alt="Lucy character card"><img src="img/gru.svg" alt="Gru character card"></div>
+<div class="chapter">Chapter 3 · Getting There</div>
+## Captain Minion
+
+The Minion pilot cracks his knuckles, salutes, and immediately pushes every button.
+
+<span class="sfx">BEEP BOOP BWAAAMP, WHOOOOSH</span>
+
+The jet does a barrel roll, a loop-de-loop, and a move that probably isn't legal in any country. Kyle's dryer starts spinning on its own.
+
+<span class="say lucy">LUCY:</span> WOOOO! This is AMAZING!
+<span class="say gru">GRU:</span> THIS IS NOT AMAZING!
+
+The jet crash-lands straight through the pillow fortress's front wall. Feathers everywhere.
+
+<span class="say minions">MINIONS:</span> Ta-daaa! Kampai!
+
+[[Climb out of the feathers and sneak in->The Snorebots]]
+[[Follow the snoring sounds down the hall->The Nap Ray Chamber]]
+
+:: Smooth Landing
+<div class="scene"><img src="img/lucy.svg" alt="Lucy character card"><img src="img/kyle.svg" alt="Kyle character card"><img src="img/margo.svg" alt="Margo character card"></div>
+<div class="chapter">Chapter 3 · Getting There</div>
+## Smooth Landing
+
+Lucy takes the controls, cranks up a spy movie soundtrack, and pulls off a perfect stealth landing on the fortress roof.
+
+<span class="say lucy">LUCY:</span> Nailed it! Okay, team: quiet like ninjas.
+
+Kyle growls at a guard pigeon. Lucy zaps it with her lipstick taser. It is fine, just extremely surprised.
+
+<span class="sfx">ZZZAP! ...coo?</span>
+
+<span class="say margo">MARGO:</span> Okay, Lucy is officially the coolest person here.
+<span class="say gru">GRU:</span> Hey!
+<span class="say margo">MARGO:</span> Second coolest is Kyle.
+
+(link: "Drop down the air vent into the lair")[(set: $bananas to it + 1)(go-to: "The Snorebots")]
+[[Peek through the skylight first->The Nap Ray Chamber]]
+
+:: The Snorebots
+<div class="scene"><img src="img/snorebot.svg" alt="A grey robot wearing a pink nightgown"><img src="img/snorebot.svg" alt="Another robot in a nightgown"><img src="img/gru.svg" alt="Gru character card"></div>
+<div class="chapter">Chapter 4 · The Pillow Fortress</div>
+## The Snorebots
+
+The lair is soft, dim, and very quiet. Everything is made of pillows: the walls, the floor, even the light fixtures.
+
+Three huge robots in matching nightgowns roll around the corner. Their eyes glow blue.
+
+<span class="say bot">SNOREBOTS:</span> INTRUDERS DETECTED. INITIATING... LULLABY.
+
+Soft harp music starts playing. Gru's eyelids begin to droop.
+
+<span class="say gru">GRU:</span> Must... stay... awake... someone do something!
+
+(link: "Blast them with the fart gun")[(set: $chaos to it + 1)(go-to: "Toxic Lullaby")]
+[[Lucy, lipstick taser, GO->Agent Wilde Gets Busy]]
+(link: "Release Kyle!")[(set: $chaos to it + 2)(go-to: "Release the Kyle")]
+
+:: Toxic Lullaby
+<div class="scene"><img src="img/fartgun.svg" alt="The fart gun, puffing a green cloud"><img src="img/snorebot.svg" alt="A robot in a nightgown"><img src="img/edith.svg" alt="Edith character card"><img src="img/agnes.svg" alt="Agnes character card"><img src="img/minion.svg" alt="Minion character card"></div>
+<div class="chapter">Chapter 4 · The Pillow Fortress</div>
+## Toxic Lullaby
+
+<span class="sfx">PFFFRRRRRAAAAAAAPPPPPPP!!!</span>
+
+The green cloud hits the Snorebots. Their air sensors short out. One faints, one cries oil, and the third just says "I NEED A MINUTE" and rolls away.
+
+Behind them, a pillow door wobbles open and a few bananas roll out.
+
+<span class="say edith">EDITH:</span> I'm putting the fart gun on my birthday list.
+<span class="say minions">MINIONS:</span> PFFT! Hehehe! Hehehehehe!
+<span class="say agnes">AGNES:</span> It smells like a stinky sock that ate a stinky sock.
+
+(link: "Grab the loose bananas and follow the trail")[(set: $bananas to it + 2)(go-to: "The Banana Vault")]
+[[Ignore the bananas. Find Snoozemonger.->The Nap Ray Chamber]]
+
+:: Agent Wilde Gets Busy
+<div class="scene"><img src="img/lucy.svg" alt="Lucy character card"><img src="img/snorebot.svg" alt="A robot in a nightgown"><img src="img/gru.svg" alt="Gru character card"><img src="img/margo.svg" alt="Margo character card"></div>
+<div class="chapter">Chapter 4 · The Pillow Fortress</div>
+## Agent Wilde Gets Busy
+
+Lucy flips over the first Snorebot, zaps the second with her lipstick taser, and ties up the third with her own scarf.
+
+<span class="sfx">ZAP! ZAP! THUD.</span>
+
+<span class="say lucy">LUCY:</span> Whoo! Still got it!
+<span class="say gru">GRU:</span> I love that woman.
+<span class="say margo">MARGO:</span> Gross. Keep it to yourself.
+
+One of the Snorebots drops a keycard marked ''BANANA VAULT''.
+
+(link: "Use the keycard on the vault")[(set: $bananas to it + 1)(go-to: "The Banana Vault")]
+[[Skip the vault. Stop the Nap Ray first.->The Nap Ray Chamber]]
+
+:: Release the Kyle
+<div class="scene"><img src="img/kyle.svg" alt="Kyle character card"><img src="img/gru.svg" alt="Gru character card"><img src="img/snorebot.svg" alt="A robot in a nightgown"><img src="img/agnes.svg" alt="Agnes character card"></div>
+<div class="chapter">Chapter 4 · The Pillow Fortress</div>
+## Release the Kyle
+
+Gru opens the dryer door. Kyle shoots out like a furious, spiky meatball.
+
+He runs straight past the Snorebots, turns around, and bites Gru firmly on the butt.
+
+<span class="say gru">GRU:</span> AAAAAAAAAAAAAGH!!!
+
+Gru's scream is so loud that it overloads all three Snorebots' sleep sensors. They explode into a cloud of feathers.
+
+<span class="say agnes">AGNES:</span> Good boy, Kyle!
+<span class="say gru">GRU:</span> He is NOT a good boy! He is a GOBLIN!
+
+<span class="note">Kyle wags his tail. He knows what he did.</span>
+
+[[Limp heroically toward the banana vault->The Banana Vault]]
+[[Limp heroically toward the snoring->The Nap Ray Chamber]]
+
+:: The Banana Vault
+<div class="scene"><img src="img/banana.svg" alt="A bunch of bananas"><img src="img/minion.svg" alt="Minion character card"><img src="img/minion2.svg" alt="Minion character card saying Bello"><img src="img/gru.svg" alt="Gru character card"><img src="img/banana.svg" alt="More bananas"></div>
+<div class="chapter">Chapter 4 · The Pillow Fortress</div>
+## The Banana Vault
+
+The vault door swings open, and golden light floods out. It's a mountain of bananas, all the bananas on Earth, piled to the ceiling.
+
+The Minions stand very still. One of them sheds a single tear.
+
+<span class="say minions">MINIONS:</span> ...Banana. ''BANANAAAAAAAAAAA!!!''
+<span class="say gru">GRU:</span> Okay. Okay okay okay. Nobody move. We need to get these out carefully—
+
+A Minion is already doing a running jump.
+
+(link: "Organize a careful banana bucket brigade")[(set: $bananas to it + 4)(go-to: "Pajama Party of Doom")]
+(link: "Let them dive in. They've earned this.")[(set: $bananas to it + 2, $chaos to it + 3)(go-to: "Pajama Party of Doom")]
+
+:: The Nap Ray Chamber
+<div class="scene"><img src="img/margo.svg" alt="Margo character card"><img src="img/edith.svg" alt="Edith character card"><img src="img/snoozemonger.svg" alt="Dr. Snoozemonger in his nightcap"></div>
+<div class="chapter">Chapter 4 · The Pillow Fortress</div>
+## The Nap Ray Chamber
+
+In the center of a huge room is the ''Eternal Nap Ray'': a giant cannon covered in quilts and powered by a big, glowing banana battery.
+
+Margo squints at the control panel.
+
+<span class="say margo">MARGO:</span> Hey. The power cable plugs in right here. It's labeled "Do not unplug." He actually labeled his weak spot.
+<span class="say edith">EDITH:</span> Or we could blow it up.
+<span class="say margo">MARGO:</span> Or we could unplug it, like normal people.
+
+Before they can decide, a spotlight snaps on.
+
+<span class="say villain">DR. SNOOZEMONGER:</span> Well, well, well. Guests. How... exhausting.
+
+(link: "Have Margo yank the plug!")[(set: $bananas to it + 2)(go-to: "Pajama Party of Doom")]
+[[Distract him and sneak to the vault first->The Banana Vault]]
+
+:: Pajama Party of Doom
+<div class="scene"><img src="img/snoozemonger.svg" alt="Dr. Snoozemonger in his nightcap"><img src="img/gru.svg" alt="Gru character card"><img src="img/margo.svg" alt="Margo character card"><img src="img/agnes.svg" alt="Agnes character card"></div>
+<div class="chapter">Chapter 4 · The Pillow Fortress</div>
+## Pajama Party of Doom
+
+Dr. Snoozemonger floats down on a hovering mattress, aiming the Nap Ray straight at Gru.
+
+<span class="say villain">DR. SNOOZEMONGER:</span> You can't stop me, Gru. In ten seconds the whole world will take a nap. No more alarm clocks. No more Mondays. Just... sleep.
+<span class="say gru">GRU:</span> That... actually sounds kind of nice? NO! Focus, Gru!
+
+The Nap Ray hums. Everyone starts yawning. Even Lucy. Even Kyle. The Minions are already snoring in a pile.
+
+<span class="say margo">MARGO:</span> Gru... do... something...
+<span class="say agnes">AGNES:</span> (yaaawn) ...I think it's a fluffy emergency.
+
+[[One last blast from the fart gun->The Final Toot]]
+[[Agnes, it's unicorn time->Fluffy Emergency]]
+(link: "WAKE THE MINIONS!")[(set: $chaos to it + 2)(go-to: "BANANA!")]
+
+:: The Final Toot
+<div class="scene"><img src="img/fartgun.svg" alt="The fart gun, puffing a green cloud"><img src="img/kyle.svg" alt="Kyle character card"><img src="img/snoozemonger.svg" alt="Dr. Snoozemonger in his nightcap"></div>
+<div class="chapter">Chapter 4 · The Pillow Fortress</div>
+## The Final Toot
+
+Gru raises the fart gun, aims, and pulls the trigger.
+
+<span class="sfx">...pfft.</span>
+
+It's out of gas. Snoozemonger laughs a slow, sleepy laugh.
+
+<span class="say villain">DR. SNOOZEMONGER:</span> Ha... ha... ha... (yawn)
+
+But the tiny pfft drifts right up Kyle's nose. His eyes snap open. He leaps, flies through the air, and bites Snoozemonger's fluffy slipper.
+
+<span class="say villain">DR. SNOOZEMONGER:</span> OWWW! MY SLIPPER! THESE WERE A GIFT FROM MY MOTHER!
+
+He drops the remote. Gru grabs it.
+
+(link: "Smash the Nap Ray's self-destruct button")[(set: $chaos to it + 1)(go-to: "Finale")]
+(link: "Calmly switch it off and grab the banana battery")[(set: $bananas to it + 2)(go-to: "Finale")]
+
+:: Fluffy Emergency
+<div class="scene"><img src="img/agnes.svg" alt="Agnes character card"><img src="img/unicorn.svg" alt="The fluffy unicorn"><img src="img/snoozemonger.svg" alt="Dr. Snoozemonger in his nightcap"><img src="img/gru.svg" alt="Gru character card"></div>
+<div class="chapter">Chapter 4 · The Pillow Fortress</div>
+## Fluffy Emergency
+
+Agnes stands up, unzips her suitcase, and pulls out the fluffy unicorn. She holds it high above her head.
+
+<span class="say agnes">AGNES:</span> ''BEHOLD... THE FLUFF!!!''
+
+A wave of pure fluffiness rolls across the room. Snoozemonger freezes and his lip begins to wobble.
+
+<span class="say villain">DR. SNOOZEMONGER:</span> Is that... a fluffy unicorn? I... I've always wanted a fluffy unicorn...
+
+He drops the Nap Ray, floats down, and gently hugs the unicorn. Agnes pats his nightcap.
+
+<span class="say agnes">AGNES:</span> See? He just needed a hug.
+<span class="say gru">GRU:</span> I... cannot believe that worked.
+
+(link: "Let Lucy cuff him while he's busy hugging")[(set: $bananas to it + 2)(go-to: "Finale")]
+(link: "Let Edith accidentally-on-purpose blow up the Nap Ray")[(set: $chaos to it + 2)(go-to: "Finale")]
+
+:: BANANA!
+<div class="scene"><img src="img/minion.svg" alt="Minion character card"><img src="img/minion2.svg" alt="Minion character card saying Bello"><img src="img/minion.svg" alt="Minion character card"><img src="img/snoozemonger.svg" alt="Dr. Snoozemonger in his nightcap"></div>
+<div class="chapter">Chapter 4 · The Pillow Fortress</div>
+## BANANA!
+
+Gru takes a deep breath and yells the only word guaranteed to wake a Minion.
+
+<span class="say gru">GRU:</span> ''BANANAAAAAAAAAAA!!!''
+
+A hundred Minion eyes pop open. Then a hundred Minions launch at Snoozemonger in a giant yellow avalanche.
+
+<span class="say minions">MINIONS:</span> BANANAAAAA! Tank yu! BLEEEEH!
+<span class="say villain">DR. SNOOZEMONGER:</span> NO! Not the overalls! Get off! Who's licking my ear?!
+
+In ten seconds Snoozemonger is under a Minion pile, the Nap Ray has googly eyes stuck all over it, and somebody is wearing his nightcap.
+
+(link: "Order the Minions to carry the bananas home")[(set: $bananas to it + 2)(go-to: "Finale")]
+(link: "Let the Minions throw a victory party right here")[(set: $chaos to it + 3)(go-to: "Finale")]
+
+:: Finale
+{(if: $chaos >= 8)[(go-to: "The Banana Water Park")]
+(else-if: $bananas >= 6)[(go-to: "The Greatest Banana Rescue")]
+(else:)[(go-to: "A Well-Deserved Nap")]}
+
+:: The Greatest Banana Rescue [ending]
+{(unless: $endings is a dataset)[(set: $endings to (ds:))](set: $endings to it + (ds: "Hero"))}
+<div class="scene"><img src="img/gru.svg" alt="Gru character card"><img src="img/lucy.svg" alt="Lucy character card"><img src="img/margo.svg" alt="Margo character card"><img src="img/edith.svg" alt="Edith character card"><img src="img/agnes.svg" alt="Agnes character card"><img src="img/kyle.svg" alt="Kyle character card"><img src="img/minion.svg" alt="Minion character card"><img src="img/unicorn.svg" alt="The fluffy unicorn"></div>
+<div class="chapter">The End</div>
+## The Greatest Banana Rescue in History
+
+Every last banana makes it home. The Minions throw a parade, and the world's fruit bowls are full again.
+
+Dr. Snoozemonger gets locked up at the Anti-Villain League. Agnes visits on weekends, and they have tea parties. He is much nicer after a good nap.
+
+<span class="say lucy">LUCY:</span> Great work, team! The AVL is giving you a medal, Gru.
+<span class="say gru">GRU:</span> Finally! Recognition!
+
+The medal is shaped like a banana. A Minion eats it immediately.
+
+<span class="say edith">EDITH:</span> Can we do another one tomorrow?
+
+<span class="ending">Ending: HERO 🏆</span>
+<span class="note">Lots of bananas, not too much chaos. Gru is proud. Kyle is still not sorry.</span>
+
+Endings discovered: ''(print: $endings's length) of 3''
+
+[[Play again->Start]]
+
+:: The Banana Water Park [ending]
+{(unless: $endings is a dataset)[(set: $endings to (ds:))](set: $endings to it + (ds: "Chaos"))}
+<div class="scene"><img src="img/minion.svg" alt="Minion character card"><img src="img/minion2.svg" alt="Minion character card saying Bello"><img src="img/snoozemonger.svg" alt="Dr. Snoozemonger in his nightcap"><img src="img/kyle.svg" alt="Kyle character card"><img src="img/margo.svg" alt="Margo character card"></div>
+<div class="chapter">The End</div>
+## The Banana Water Park
+
+You won! Dr. Snoozemonger is caught! ...But the Minions have also taken over the pillow fortress.
+
+In about an hour they turn it into the world's first banana-themed water park, with slides, a lazy river, and a gift shop that only sells bananas.
+
+<span class="say gru">GRU:</span> How is there a gift shop. We have been here for one hour.
+<span class="say margo">MARGO:</span> Honestly? This is the best vacation we've ever had.
+
+Dr. Snoozemonger is now the lifeguard. He is asleep in the chair.
+
+Kyle is in charge of security. He bites everyone, Gru most of all.
+
+<span class="ending">Ending: TOTAL CHAOS 🌊</span>
+<span class="note">The world is saved, technically. Play again for a less chaotic ending.</span>
+
+Endings discovered: ''(print: $endings's length) of 3''
+
+[[Play again->Start]]
+
+:: A Well-Deserved Nap [ending]
+{(unless: $endings is a dataset)[(set: $endings to (ds:))](set: $endings to it + (ds: "Nap"))}
+<div class="scene"><img src="img/gru.svg" alt="Gru character card"><img src="img/agnes.svg" alt="Agnes character card"><img src="img/unicorn.svg" alt="The fluffy unicorn"><img src="img/snoozemonger.svg" alt="Dr. Snoozemonger in his nightcap"></div>
+<div class="chapter">The End</div>
+## A Well-Deserved Nap
+
+You did it! The Nap Ray is off and Snoozemonger is handcuffed to his own hovering mattress.
+
+There's just one problem: most of the bananas are still missing. A few got squashed, a few rolled away, and a few are unaccounted for (one Minion looks very full).
+
+<span class="say lucy">LUCY:</span> Hey, we saved the world. The bananas will turn up!
+
+Everyone is so tired that they curl up on the fortress's giant pillows and fall asleep. Even Gru. Even Edith.
+
+<span class="say agnes">AGNES:</span> (whispering) Goodnight, fluffy unicorn. Goodnight, Kyle. Goodnight, sleepy bad guy.
+<span class="say villain">DR. SNOOZEMONGER:</span> (muffled, from the mattress) ...goodnight.
+
+<span class="ending">Ending: SLEEPY VICTORY 😴</span>
+<span class="note">Recover more bananas next time for the hero ending!</span>
+
+Endings discovered: ''(print: $endings's length) of 3''
+
+[[Play again->Start]]
