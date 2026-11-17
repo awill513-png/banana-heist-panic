@@ -108,96 +108,50 @@
 </div>
 
 <script id="story">
-// ── Original retro cartoon sprites (hand-drawn SVG, 64×80) ──
+// ── Original retro art: character badge cards + hand-drawn props (SVG, 64×80) ──
 function svg(b) { return '<svg viewBox="0 0 64 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' + b + '</svg>'; }
 var INK = 'stroke="#1a1a1a" stroke-width="1.5"';
 var SPRITES = {
   gru: function () { return svg(`
-    <path d="M12 80 L17 47 Q32 39 47 47 L52 80Z" fill="#2b2b30" ${INK}/>
-    <rect x="19" y="41" width="26" height="8" rx="4" fill="#7a7f8a" ${INK}/>
-    <rect x="35" y="47" width="7" height="18" fill="#7a7f8a" ${INK}/>
-    <rect x="35" y="52" width="7" height="3" fill="#2b2b30"/><rect x="35" y="59" width="7" height="3" fill="#2b2b30"/>
-    <ellipse cx="32" cy="23" rx="15" ry="18" fill="#f2d2b0" ${INK}/>
-    <path d="M30 20 Q22 34 29 36 Q35 37 35 30 Z" fill="#e8bb92" ${INK}/>
-    <circle cx="25" cy="20" r="2.2" fill="#1a1a1a"/><circle cx="39" cy="20" r="2.2" fill="#1a1a1a"/>
-    <path d="M20 15 l8 3 M44 15 l-8 3" stroke="#1a1a1a" stroke-width="2"/>
-    <path d="M24 38 q8 -3 16 0" fill="none" ${INK}/>`); },
+    <rect x="6" y="8" width="52" height="68" rx="9" fill="#2b2b30" ${INK}/>
+    <rect x="10" y="12" width="44" height="60" rx="6" fill="none" stroke="#ecebe4" stroke-opacity=".5" stroke-dasharray="3 3"/>
+    <text x="32" y="46" font-size="26" text-anchor="middle">🧣</text>
+    <text x="32" y="66" font-size="8.5" font-family="monospace" font-weight="bold" text-anchor="middle" fill="#ecebe4">GRU</text>`); },
   lucy: function () { return svg(`
-    <path d="M15 34 Q13 7 32 6 Q51 7 49 34 L49 44 L15 44Z" fill="#d94a2b" ${INK}/>
-    <path d="M17 80 L20 51 Q32 45 44 51 L47 80Z" fill="#2fb3a8" ${INK}/>
-    <rect x="28" y="38" width="8" height="12" fill="#fbe0c8" ${INK}/>
-    <path d="M27 48 L32 56 L37 48" fill="#fff" ${INK}/>
-    <ellipse cx="32" cy="28" rx="12" ry="14" fill="#fbe0c8" ${INK}/>
-    <path d="M19 24 Q23 10 34 12 Q45 13 45 25 Q38 17 30 19 Q24 20 19 24Z" fill="#d94a2b" ${INK}/>
-    <circle cx="27" cy="28" r="2" fill="#1a1a1a"/><circle cx="37" cy="28" r="2" fill="#1a1a1a"/>
-    <path d="M26 34 q6 6 12 0 Z" fill="#e0245e" ${INK}/>`); },
+    <rect x="6" y="8" width="52" height="68" rx="9" fill="#2fb3a8" ${INK}/>
+    <rect x="10" y="12" width="44" height="60" rx="6" fill="none" stroke="#14161f" stroke-opacity=".5" stroke-dasharray="3 3"/>
+    <text x="32" y="46" font-size="26" text-anchor="middle">💄</text>
+    <text x="32" y="66" font-size="8.5" font-family="monospace" font-weight="bold" text-anchor="middle" fill="#14161f">LUCY</text>`); },
   margo: function () { return svg(`
-    <path d="M18 44 Q16 18 32 17 Q48 18 46 44 L46 58 L18 58Z" fill="#4a2c1a" ${INK}/>
-    <path d="M19 80 L22 60 Q32 55 42 60 L45 80Z" fill="#4a7fd4" ${INK}/>
-    <rect x="29" y="49" width="6" height="11" fill="#f6dcc4" ${INK}/>
-    <ellipse cx="32" cy="40" rx="11" ry="12" fill="#f6dcc4" ${INK}/>
-    <path d="M21 36 Q24 24 34 26 Q42 27 43 36 Q36 30 28 32Z" fill="#4a2c1a"/>
-    <rect x="23" y="37" width="8" height="6" rx="2" fill="#fff" fill-opacity=".5" ${INK}/><rect x="33" y="37" width="8" height="6" rx="2" fill="#fff" fill-opacity=".5" ${INK}/>
-    <circle cx="27" cy="40" r="1.4" fill="#1a1a1a"/><circle cx="37" cy="40" r="1.4" fill="#1a1a1a"/>
-    <path d="M28 47 h8" ${INK}/>`); },
+    <rect x="6" y="8" width="52" height="68" rx="9" fill="#4a7fd4" ${INK}/>
+    <rect x="10" y="12" width="44" height="60" rx="6" fill="none" stroke="#ffffff" stroke-opacity=".5" stroke-dasharray="3 3"/>
+    <text x="32" y="46" font-size="26" text-anchor="middle">📚</text>
+    <text x="32" y="66" font-size="8.5" font-family="monospace" font-weight="bold" text-anchor="middle" fill="#ffffff">MARGO</text>`); },
   edith: function () { return svg(`
-    <path d="M20 80 L22 60 Q32 55 42 60 L44 80Z" fill="#ff7fb0" ${INK}/>
-    <rect x="22" y="66" width="20" height="3" fill="#2b2b30"/><rect x="21" y="72" width="22" height="3" fill="#2b2b30"/>
-    <rect x="29" y="52" width="6" height="8" fill="#f6dcc4" ${INK}/>
-    <ellipse cx="32" cy="44" rx="11" ry="11" fill="#f6dcc4" ${INK}/>
-    <path d="M20 42 Q32 34 44 42 L44 38 Q32 32 20 38Z" fill="#f5d36b"/>
-    <path d="M19 40 Q19 22 32 22 Q45 22 45 40 Z" fill="#ff5c9a" ${INK}/>
-    <path d="M21 36 h22 M21 32 h22" stroke="#d23c78" stroke-width="2"/>
-    <circle cx="32" cy="20" r="3" fill="#ff5c9a" ${INK}/>
-    <circle cx="27" cy="45" r="1.8" fill="#1a1a1a"/><circle cx="37" cy="45" r="1.8" fill="#1a1a1a"/>
-    <path d="M27 50 q5 3 10 -1" fill="none" ${INK}/>`); },
+    <rect x="6" y="8" width="52" height="68" rx="9" fill="#ff5c9a" ${INK}/>
+    <rect x="10" y="12" width="44" height="60" rx="6" fill="none" stroke="#14161f" stroke-opacity=".5" stroke-dasharray="3 3"/>
+    <text x="32" y="46" font-size="26" text-anchor="middle">💥</text>
+    <text x="32" y="66" font-size="8.5" font-family="monospace" font-weight="bold" text-anchor="middle" fill="#14161f">EDITH</text>`); },
   agnes: function () { return svg(`
-    <path d="M21 80 L23 62 Q32 58 41 62 L43 80Z" fill="#ffe680" ${INK}/>
-    <path d="M22 80 V66 H42 V80Z" fill="#4a7fd4" ${INK}/>
-    <rect x="29" y="56" width="6" height="7" fill="#f6dcc4" ${INK}/>
-    <ellipse cx="32" cy="48" rx="11" ry="11" fill="#f6dcc4" ${INK}/>
-    <path d="M21 46 Q22 36 32 36 Q42 36 43 46 Q37 40 32 41 Q26 40 21 46Z" fill="#222" ${INK}/>
-    <ellipse cx="32" cy="32" rx="5" ry="6" fill="#222" ${INK}/>
-    <circle cx="32" cy="38" r="2" fill="#ff5c9a"/>
-    <circle cx="27" cy="49" r="2.4" fill="#1a1a1a"/><circle cx="37" cy="49" r="2.4" fill="#1a1a1a"/>
-    <circle cx="27.8" cy="48.2" r=".8" fill="#fff"/><circle cx="37.8" cy="48.2" r=".8" fill="#fff"/>
-    <ellipse cx="32" cy="55" rx="3" ry="2" fill="#a0303a"/>`); },
+    <rect x="6" y="8" width="52" height="68" rx="9" fill="#b38bff" ${INK}/>
+    <rect x="10" y="12" width="44" height="60" rx="6" fill="none" stroke="#14161f" stroke-opacity=".5" stroke-dasharray="3 3"/>
+    <text x="32" y="46" font-size="26" text-anchor="middle">🎀</text>
+    <text x="32" y="66" font-size="8.5" font-family="monospace" font-weight="bold" text-anchor="middle" fill="#14161f">AGNES</text>`); },
   kyle: function () { return svg(`
-    <path d="M12 58 l3 -9 l3 6 l3 -10 l3 7 l3 -10 l3 8 l3 -9 l3 7 l3 -8 l3 6 l4 -4 V70 H12Z" fill="#3a3a42" ${INK}/>
-    <ellipse cx="30" cy="62" rx="18" ry="10" fill="#3a3a42" ${INK}/>
-    <rect x="16" y="68" width="5" height="10" fill="#3a3a42" ${INK}/><rect x="38" y="68" width="5" height="10" fill="#3a3a42" ${INK}/>
-    <circle cx="44" cy="52" r="11" fill="#3a3a42" ${INK}/>
-    <circle cx="46" cy="49" r="4.5" fill="#fff" ${INK}/><circle cx="47" cy="49" r="2" fill="#c23"/>
-    <path d="M36 58 h18 l-2 4 l-2 -3 l-2 4 l-2 -4 l-2 4 l-2 -4 l-2 4 l-2 -4z" fill="#fff" ${INK}/>`); },
+    <rect x="6" y="8" width="52" height="68" rx="9" fill="#8a8f99" ${INK}/>
+    <rect x="10" y="12" width="44" height="60" rx="6" fill="none" stroke="#ff6b6b" stroke-opacity=".5" stroke-dasharray="3 3"/>
+    <text x="32" y="46" font-size="26" text-anchor="middle">🦴</text>
+    <text x="32" y="66" font-size="8.5" font-family="monospace" font-weight="bold" text-anchor="middle" fill="#14161f">KYLE</text>`); },
   minion: function () { return svg(`
-    <path d="M30 10 l-3 -7 M32 10 v-8 M34 10 l3 -7" stroke="#222" stroke-width="1.5"/>
-    <rect x="16" y="10" width="32" height="62" rx="16" fill="#ffd43b" ${INK}/>
-    <path d="M16 50 H48 V56 A16 16 0 0 1 16 56 Z" fill="#3b6fc4" ${INK}/>
-    <rect x="22" y="43" width="20" height="9" fill="#3b6fc4" ${INK}/>
-    <circle cx="32" cy="48" r="2" fill="#1a1a1a"/>
-    <path d="M16 42 L22 45 M48 42 L42 45" stroke="#1a1a1a" stroke-width="2"/>
-    <path d="M16 46 l-6 8 M48 46 l6 8" stroke="#ffd43b" stroke-width="4" stroke-linecap="round"/>
-    <circle cx="10" cy="55" r="3" fill="#222"/><circle cx="54" cy="55" r="3" fill="#222"/>
-    <rect x="16" y="23" width="32" height="5" fill="#333"/>
-    <circle cx="32" cy="26" r="8.5" fill="#c7ccd6" stroke="#555" stroke-width="2"/>
-    <circle cx="32" cy="26" r="5.5" fill="#fff"/><circle cx="33" cy="26" r="2.5" fill="#6b4220"/><circle cx="33" cy="26" r="1.1" fill="#000"/>
-    <path d="M25 37 q7 7 14 0 Z" fill="#7a2b1a" ${INK}/>
-    <rect x="22" y="72" width="8" height="5" fill="#222"/><rect x="34" y="72" width="8" height="5" fill="#222"/>`); },
+    <rect x="6" y="8" width="52" height="68" rx="9" fill="#ffd43b" ${INK}/>
+    <rect x="10" y="12" width="44" height="60" rx="6" fill="none" stroke="#14161f" stroke-opacity=".5" stroke-dasharray="3 3"/>
+    <text x="32" y="46" font-size="26" text-anchor="middle">🍌</text>
+    <text x="32" y="66" font-size="8.5" font-family="monospace" font-weight="bold" text-anchor="middle" fill="#14161f">MINION</text>`); },
   minion2: function () { return svg(`
-    <path d="M28 8 q2 -6 4 0 q2 -6 4 0" fill="none" stroke="#222" stroke-width="1.5"/>
-    <rect x="15" y="8" width="34" height="58" rx="17" fill="#ffd43b" ${INK}/>
-    <path d="M15 46 H49 V49 A17 17 0 0 1 15 49 Z" fill="#3b6fc4" ${INK}/>
-    <rect x="22" y="39" width="20" height="9" fill="#3b6fc4" ${INK}/>
-    <path d="M15 37 L22 41 M49 37 L42 41" stroke="#1a1a1a" stroke-width="2"/>
-    <path d="M15 42 l-5 -10 M49 42 l5 -10" stroke="#ffd43b" stroke-width="4" stroke-linecap="round"/>
-    <circle cx="10" cy="31" r="3" fill="#222"/><circle cx="54" cy="31" r="3" fill="#222"/>
-    <rect x="15" y="20" width="34" height="5" fill="#333"/>
-    <circle cx="25" cy="23" r="6.5" fill="#c7ccd6" stroke="#555" stroke-width="2"/><circle cx="39" cy="23" r="6.5" fill="#c7ccd6" stroke="#555" stroke-width="2"/>
-    <circle cx="25" cy="23" r="4" fill="#fff"/><circle cx="39" cy="23" r="4" fill="#fff"/>
-    <circle cx="26" cy="24" r="1.8" fill="#3a6b2a"/><circle cx="38" cy="24" r="1.8" fill="#3a6b2a"/>
-    <path d="M26 32 q6 4 12 0" fill="none" ${INK}/>
-    <rect x="21" y="66" width="8" height="10" fill="#3b6fc4" ${INK}/><rect x="35" y="66" width="8" height="10" fill="#3b6fc4" ${INK}/>
-    <rect x="20" y="74" width="10" height="4" fill="#222"/><rect x="34" y="74" width="10" height="4" fill="#222"/>`); },
+    <rect x="6" y="8" width="52" height="68" rx="9" fill="#ffd43b" ${INK}/>
+    <rect x="10" y="12" width="44" height="60" rx="6" fill="none" stroke="#2e5eaa" stroke-opacity=".5" stroke-dasharray="3 3"/>
+    <text x="32" y="46" font-size="26" text-anchor="middle">🗯️</text>
+    <text x="32" y="66" font-size="8.5" font-family="monospace" font-weight="bold" text-anchor="middle" fill="#2e5eaa">BELLO!</text>`); },
   unicorn: function () { return svg(`
     <g fill="#fff6fb" ${INK}>
       <rect x="20" y="62" width="5" height="14"/><rect x="38" y="62" width="5" height="14"/>
